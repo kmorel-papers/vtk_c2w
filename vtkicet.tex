@@ -4,8 +4,8 @@
 
 \usepackage[usenames]{color}
 \definecolor{Red}{rgb}{1,0,0}
-\newcommand{\sticky}[1]{\textcolor{Red}{[#1]}}
-%\newcommand{\sticky}[1]{}
+%\newcommand{\sticky}[1]{\textcolor{Red}{[#1]}}
+\newcommand{\sticky}[1]{}
 
 \usepackage{graphicx}
 \usepackage{varioref}
@@ -57,23 +57,24 @@
   wrap these tools into VTK components and store these components in a
   common component library.  This should allow each tool to work together
   with current and future tools under the same, consistent user interface.
-  All three DOE ASCI national labs, Sandia, Las Alamos, and Lawrence
-  Livermore, have agreed to make VTK the R\&D platform for visualization.
+  All three DOE Advanced Simulation and Computing (ASCI) national labs,
+  Sandia, Las Alamos, and Lawrence Livermore, are using VTK to some extent
+  in their visualization R\&D programs.
 
   Our visualization needs put a large strain on VTK.  ASCI routinely
   creates simulations on the order of 50 million cells \cite{Heermann99},
-  and it is predicted that by 2004 ASCI will routinely create 250 million
-  cell simulations requiring up to a petabyte of storage \cite{Smith98}.
-  The processing of such data is well beyond the capabilities of a standard
-  workstation.  Our most cost effective means for handling this data in a
-  timely manner is the use of commodity cluster computers running
-  distributed memory algorithms.  The creation of such high fidelity models
-  also necessitates the use of high fidelity displays for visualization.
-  To realize these high resolution displays we build ``power walls,''
-  projected displays driven by tiled arrays of commodity projectors.  We
-  require our VTK applications to run interactively on clustered computers
-  while either driving a power wall or shipping images back to a remote
-  computer for desktop delivery.
+  and it is predicted that by 2004 applications will routinely create 250
+  million cell simulations requiring up to a petabyte of storage
+  \cite{Smith98}.  The processing of such data is well beyond the
+  capabilities of a standard workstation.  Our most cost effective means
+  for handling this data in a timely manner is the use of commodity cluster
+  computers running distributed memory algorithms.  The creation of such
+  high fidelity models also necessitates the use of high fidelity displays
+  for visualization.  To realize these high resolution displays we build
+  ``power walls,'' projected displays driven by tiled arrays of commodity
+  projectors.  We require our VTK applications to run interactively on
+  clustered computers while either driving a power wall or shipping images
+  back to a remote computer for desktop delivery.
 
 
   \section{Previous Work}
@@ -149,7 +150,7 @@
     \caption{Interactions of the parallel render manager during render.}
     \label{fig:parallel_render_manager_interaction}
   \end{figure}
-  Figure \vref{fig:parallel_render_manager_interaction} outlines how the
+  Figure \ref{fig:parallel_render_manager_interaction} outlines how the
   \cidentifier{vtk\-Parallel\-Render\-Manager} behaves during a render
   event.  After the ``master'' or ``root'' parallel render manager receives
   the start render event, it broadcasts a remote method invocation to all
@@ -250,7 +251,7 @@
   pastes the image to the window.  As one would expect, the
   \cidentifier{vtk\-Desktop\-Delivery\-Server} object responds to render
   requests from the client by invoking the render window and shipping the
-  resulting image back.  Figure \vref{fig:desktop_delivery_interaction}
+  resulting image back.  Figure \ref{fig:desktop_delivery_interaction}
   shows the details of this process.
 
   The reader may notice a striking similarity between the operational
@@ -298,12 +299,12 @@
   Because Chromium has the ability to put itself in place of an OpenGL
   shared object library, it can provide a tile display and/or a number of
   other filtering operations to almost any OpenGL application without
-  modification.  \sticky{Pat says this next sentance is repetitious from
-  ``Previous Work'' (which it is) and should go.  I think it's helpful, but
-  If I run out of room...}  However, the OpenGL API is inherently serial,
-  which can impose a huge bottleneck.  Chromium also supports parallel
-  applications, but the application must be at least somewhat Chromium
-  ``aware.''
+  modification or even recompilation.  While flexibility was a major design
+  consideration for Chromium, so was efficiency.  As such, many SPUs like
+  \cidentifier{tile\-sort} can be applied with little or no degradation of
+  frame rates.  However, as mentioned before, using Chromium in serial mode
+  is not feasible for large data models, so we must make our application
+  Chromium aware so that we can use it in parallel.
 
   To make our VTK applications Chromium aware, we built the
   \cidentifier{vtk\-Cr\-Render\-Manager} object.  Because the parallel
@@ -335,18 +336,32 @@
   issues.  Some work has been done to correct these issues
   \cite{Samanta99}, but has not yet been implemented in Chromium.
 
-  Because Chromium is a pluggable architecture supporting both sort-first
-  and sort-last parallel rendering algorithms, it is conceivable to use a
-  combination of both.  So another alternative currently available in
-  Chromium is to assign multiple processes to each tile and use a
-  \cidentifier{binary\-swap} SPU to generate a single image per tile.
-  Clients could then use the \cidentifier{tile\-sort} SPU to send
-  primitives to one processor for each tile.  An example configuration is
-  shown in figure \vref{fig:crazy_chromium_crapp}.  While such a setup
-  should enable larger clusters to realize faster rendering rates, it still
-  suffers from the same load balancing issues discussed above.
-  Furthermore, because each polygon must still be pushed onto the wire, we
-  still expect scalability issues with large amounts of geometry.
+  Of course, Chromium is not bound to the sort-first approach to parallel
+  rendering that \cidentifier{tile\-sort} implements.  It can just as
+  easily support a sort-last approach, and the \cidentifier{binary\-swap}
+  SPU does just that.  Like most sort-last parallel renderers,
+  \cidentifier{binary\-swap} scales well with the size of geometry being
+  rendered and the number of processors doing the rendering, but at the
+  expense of frame rate speeds.  More importantly, the sort-last technique
+  is very sensitive to the resolution of the output display.  Generating
+  images that fit on a typical desktop is feasible, but generating images
+  on high resolution tiled displays is not.  We are currently considering
+  techniques that may use \cidentifier{tile\-sort} and
+  \cidentifier{binary\-swap} to better distribute the work for large
+  amounts of data on tiled displays.
+
+%%   Because Chromium is a pluggable architecture supporting both sort-first
+%%   and sort-last parallel rendering algorithms, it is conceivable to use a
+%%   combination of both.  So another alternative currently available in
+%%   Chromium is to assign multiple processes to each tile and use a
+%%   \cidentifier{binary\-swap} SPU to generate a single image per tile.
+%%   Clients could then use the \cidentifier{tile\-sort} SPU to send
+%%   primitives to one processor for each tile.  An example configuration is
+%%   shown in figure \ref{fig:crazy_chromium_crapp}.  While such a setup
+%%   should enable larger clusters to realize faster rendering rates, it still
+%%   suffers from the same load balancing issues discussed above.
+%%   Furthermore, because each polygon must still be pushed onto the wire, we
+%%   still expect scalability issues with large amounts of geometry.
 
 
   \section{ICE-T}
@@ -355,7 +370,7 @@
   Another power wall display solution available to us is ICE-T, the Image
   Composite Engine for Tiles.  The ICE-T API allows applications to easily
   perform sort-last parallel rendering.  It uses several image space
-  reduction and compression tricks to make the composition of even high
+  reduction and compression techniques to make the composition of even high
   resolution tiled displays feasible.  The details if ICE-T's algorithms
   can be found in \cite{Moreland01}.
 
@@ -391,8 +406,8 @@
   \cidentifier{vtk\-Ice\-T\-Render\-Manager} works in conjunction with the
   ICE-T API to compose images.
 
-  However, ICE-T also must perturb the projection matrix and perform
-  several renderings.  This behavior is beyond that of a
+  However, ICE-T also must in some cases transform the projection matrix
+  and perform several renderings.  This behavior is beyond that of a
   \cidentifier{vtk\-Parallel\-Render\-Manager} unit.  So we designed an
   object called \cidentifier{vtk\-Ice\-T\-Renderer} to handle this.
   \cidentifier{vtk\-Ice\-T\-Renderer} responds to ICE-T render requests and
@@ -455,40 +470,43 @@
   \begin{figure}
     \includegraphics[width=\linewidth,viewport=.75in .75in 10.25in 7.75in]
 		    {images/scaling}
-    \caption{Comparison of rendering times using ICE-T and Chromium.}
+    \caption{Comparison of rendering times using sort-last and sort-first
+      parallel rendering.}
     \label{fig:scaling}
   \end{figure}
 
-  A comparison between Chromium's \cidentifier{tile\-sort} SPU and ICE-T
-  reveals very different rendering characteristics.  Figure
-  \vref{fig:scaling} shows the rendering performance of ICE-T for various
-  sizes of input geometry and the theoretical maxium performance of
-  Chromium.\footnote{Current bugs in Chromium are preventing us from
-  performing a fairly scaled comparison to ICE-T in figure
-  \ref{fig:scaling}.  The Chromium performance is based on the assumption
-  that the network is the only bottleneck and that each
-  \cidentifier{crserver} receives input at the maximum transfer rate.  We
-  expect the actual rendering rate to be slower than that shown in figure
-  \ref{fig:scaling}.}  The timings are taken from a job that runs on 32
-  processors and displays on 9 tiles, each having a resolution of $1280
-  \times 1024$ pixels.  When there are less than about 20 million triangles
-  all total, Chromium's \cidentifier{tile\-sort} renders faster than ICE-T.
-  However, with larger input sizes the overhead of doing sort-last image
-  compositing in ICE-T becomes insignificant.  At about 100 million
-  trianges, the rendering rate is mostly limited by the speed of the
-  graphics cards.
+  A comparison between a sort-first approach like Chromium's
+  \cidentifier{tile\-sort} SPU and a sort-last approach like ICE-T reveals
+  very different rendering characteristics.  Figure \ref{fig:scaling} shows
+  the rendering performance of ICE-T for various sizes of input geometry
+  and the theoretical maxium performance of Chromium\footnote{Initial
+  experiments indicate that clients are running at low network efficiencies
+  (on the order of 12-14\% of theoretical peak shown in \ref{fig:scaling}),
+  which we suspect are due to buffer size and flow control issues in
+  Chromium's GM implementation. We are investigating the issue and hope to
+  have scaling benchmarks by the time of the conference.}.  The timings are
+  taken from a job that runs on 32 processors and displays on 9 tiles, each
+  having a resolution of $1280 \times 1024$ pixels.  When the input
+  geometry is relatively small, Chromium's \cidentifier{tile\-sort} can
+  generate real time frame rates of 30 Hz or better, while ICE-T's
+  sort-last approach can barely run over 5 Hz.  However, when the input
+  geometry is larger than 20 million polygons, the overhead of compositing
+  images in the sort-last approach becomes smaller than the overhead of
+  transferring polygons in the sort-first approach.  Therefore, in this
+  case the sort-last approach can achieve faster rendering rates, albeit at
+  quite low frame rates.
 
   \sticky{Comparison of rendering times of Chromium and ICE-T for various
   geometry sizes.  I would have it here already, but after a month I still
   don't have the Chromium stuff working on our cluster.  It's driving me
   nucking futs.}
 
-  One drawback of the ICE-T composite objects is that they only work with
-  OpenGL rendering and MPI communications.  This is because, due to
-  historical reasons, the ICE-T API is dependent on the OpenGL and MPI
-  APIs.  In retrospect, coupling the compositing API with any particular
-  rendering or communications API was not beneficial.  Nevertheless, OpenGL
-  and MPI remain the \emph{de facto} standards.
+%%   One drawback of the ICE-T composite objects is that they only work with
+%%   OpenGL rendering and MPI communications.  This is because, due to
+%%   historical reasons, the ICE-T API is dependent on the OpenGL and MPI
+%%   APIs.  In retrospect, coupling the compositing API with any particular
+%%   rendering or communications API was not beneficial.  Nevertheless, OpenGL
+%%   and MPI remain the \emph{de facto} standards.
 
 
   \section{Future Work}
