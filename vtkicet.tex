@@ -6,6 +6,7 @@
 \definecolor{Red}{rgb}{1,0,0}
 \newcommand{\sticky}[1]{\textcolor{Red}{[#1]}}
 
+\usepackage{graphicx}
 \usepackage{varioref}
 \usepackage{hyperref}
 
@@ -26,8 +27,7 @@
   and displaying on a power wall with a total resolution of 60 Mega-pixels
   ($60*2^{20}$ pixels) in an interactive application.  We also demonstrate
   an interactive VTK application displaying the same geometry on a desktop
-  connected to the cluster via a TCP/IP socket over 100-baseT \sticky{Is
-  this right?} Ethernet.
+  connected to the cluster via a TCP/IP socket over 100BASE-T Ethernet.
 \end{abstract}
 
 \section{Introduction}
@@ -121,13 +121,11 @@ desktop delivery.  That is, we wish a user to be able to interactively
 control a visualization job rendering on a cluster and display back to a
 typical desktop machine connected via a modest LAN connection.
 
-\begin{figure*}[!t]
-  \fbox{\parbox{\textwidth}{UML diagram showing the interaction between
-      vtkDesktopDeliveryClient and vtkDesktopDeliveryServer with VTK objects
-      vtkRenderWindow, vtkMultiProcessController, and vtkCompositeManager.
-      Optionally add vtkSocketController, vtkMPIController, and
-      vtkRenderWindowInteractor.}}
-  \caption{UML diagram for desktop delivery objects.}
+\begin{figure*}
+  \begin{center}
+    \includegraphics[scale=0.23]{images/DesktopDeliveryClasses}
+  \end{center}
+  \caption{UML diagrams for desktop delivery objects.}
   \label{fig:desktop_delivery_classes}
 \end{figure*}
 
@@ -143,15 +141,19 @@ controller to controll exactly two objects with client and server in
 opposite processes.  The controller is typically implemented with a socket,
 but does not have to be.
 
-The vtkDesktopDeliveryClient object attaches itself as an observer to a
-vtkRenderWindow.  Whenever a render event occurs in the render window, the
-desktop delivery client is notified.  It then sends an RMI request to the
-desktop delivery server along with camera position, lighting, and other
-rendering information.  The desktop delivery server then instructs its own
-render window to render.  When rendering is complete, the image is shipped
-back to the desktop where it is pasted on the clients render window.
-\sticky{Perhaps this discussion can be augmented or replaced with a UML
-interaction diagram.}
+\begin{figure}[ht]
+  \begin{center}
+    \includegraphics[scale=0.23]{images/DesktopDeliveryInteraction}
+    \caption{Interactions during rendering with desktop delivery.}
+    \label{fig:desktop_delivery_interaction}
+  \end{center}
+\end{figure}
+
+The desktop delivery client object attaches itself as an observer to a
+render window.  When a render event occurs, the desktop delivery client
+object sends a render request to the server, waits for an image to come
+back, and pasts the image to the window.  Figure
+\vref{fig:desktop_delivery_interaction} shows the details of this process.
 
 Because the desktop delivery server was designed to enable delivery from
 clusters, it can optionally work with a vtkCompositeManager object, which
@@ -176,9 +178,9 @@ the render window.
 \label{sec:tiled_display}
 
 \begin{figure*}
-  \fbox{\parbox{\textwidth}{UML diagram showing the interaction between
-  vtkIceTComposite and vtkIceTRenderer with vtkCompositeManager and
-  vtkRenderWindow}}
+  \begin{center}
+    \includegraphics[scale=0.23]{images/IceTCompositeClasses}
+  \end{center}
   \caption{UML diagram for tiled display compositing.}
   \label{fig:tiled_display_classes}
 \end{figure*}
