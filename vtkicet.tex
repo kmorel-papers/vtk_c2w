@@ -92,8 +92,8 @@
   wrap these tools into VTK components and store these components in a
   common component library.  This should allow each tool to work together
   with current and future tools under the same, consistent user interface.
-  All three DOE Advanced Simulation and Computing (ASCI) national labs,
-  Sandia, Las Alamos, and Lawrence Livermore, are using VTK to some extent
+  All three DOE Advanced Simulation and Computing (ASC) national labs,
+  Sandia, Los Alamos, and Lawrence Livermore, are using VTK to some extent
   in their visualization R\&D programs.
 
   Our visualization needs put a large strain on VTK.  ASCI routinely
@@ -101,7 +101,7 @@
   and it is predicted that by 2004 applications will routinely create 250
   million cell simulations requiring up to a petabyte of storage
   \cite{Smith98}.  The processing of such data is well beyond the
-  capabilities of a standard workstation.  Our most cost effective means
+  capabilities of a standard workstation.  Our most cost-effective means
   for handling this data in a timely manner is the use of commodity cluster
   computers running distributed memory algorithms.  The creation of such
   high fidelity models also necessitates the use of high fidelity displays
@@ -160,17 +160,19 @@
   streaming mode to perform out-of-core processing of data.}.
 
   While parallel visualization and rendering are now supported by VTK,
-  display to a power wall and desktop delivery currently are not.  One
-  possible approach is to use Chromium \cite{Humphreys02}.  Chromium is
-  capable of replacing the OpenGL library loaded by an application at
-  runtime, intercepting the stream of OpenGL commands, and performing
-  several alterations to it, including driving a power wall.
-  Unfortunately, an OpenGL stream is inherently serial and must be issued
-  from a single process, which is a huge bottleneck when dealing with large
-  amounts of data.  Chromium also supports a parallel rendering mode, but
-  an application must be ``aware'' of Chromium to take advantage of this
-  parallel rendering.  We describe our efforts to make VTK applications
-  Chromium aware.
+  display to a power wall and desktop delivery currently are not.  Instead,
+  all current parallel rendering codes in VTK assume that the user
+  interface is available at the ``root'' process in a parallel job.  One
+  possible approach for driving power walls is to use Chromium
+  \cite{Humphreys02}.  Chromium is capable of replacing the OpenGL library
+  loaded by an application at runtime, intercepting the stream of OpenGL
+  commands, and performing several alterations to it, including driving a
+  power wall.  Unfortunately, an OpenGL stream is inherently serial and
+  must be issued from a single process, which is a huge bottleneck when
+  dealing with large amounts of data.  Chromium also supports a parallel
+  rendering mode, but an application must be ``aware'' of Chromium to take
+  advantage of this parallel rendering.  We describe our efforts to make
+  VTK applications Chromium aware.
 
   Another power wall display solution available to us is the Image
   Composite Engine for Tiles (ICE-T).  The ICE-T API is an implementation
@@ -254,10 +256,10 @@
     \item [Boundaries] Will compute the physical boundary, in 3-space, of
       the composite object rendered by all processes.
     \item [Image Reduction] Can reduce the size of the image being rendered
-      and inflate the image for viewing.  Reducing the image size can
-      drastically reduce the time required for image composition
-      strategies.  The class can also automatically set the image reduction
-      based on the user's desired rendering rate.
+      and then restore the image to full size for viewing.  Reducing the
+      image size can drastically reduce the time required for image
+      composition strategies.  The class can also automatically set the
+      image reduction based on the user's desired rendering rate.
     \item [Image Caching] If the post render processing requires the image
       to be read from the graphics card's frame buffer, the image will be
       cached for potential \cidentifier{vtk\-Parallel\-Render\-Manager}
@@ -290,7 +292,7 @@
   available in his/her office, we find it important to provide the ability
   of remote desktop delivery.  That is, we wish a user to be able to
   interactively control a visualization job rendering on a cluster and
-  display back to a typical desktop machine connected via a modest LAN
+  display back to a typical desktop machine connected via a local area
   network.
 
   To this end, we have built a pair of collaborating objects:
@@ -434,24 +436,24 @@
   Composite Engine for Tiles} (ICE-T).  The ICE-T API allows applications
   to easily perform sort-last parallel rendering.  It uses several image
   space reduction and compression techniques to make the composition of
-  even high resolution tiled displays feasible.  The details if ICE-T's
+  even high resolution tiled displays feasible.  The details of ICE-T's
   algorithms can be found in \cite{Moreland01}.
 
   Our initial goal was to embed ICE-T into a Chromium SPU.  However, we
-  quickly found that this is an impractical target.  The Chromium SPUs,
+  quickly found that this was an impractical target.  The Chromium SPUs,
   because they operate on streams of OpenGL commands, use a \emph{push}
   model.  That is, the application pushes OpenGL commands to the first SPU,
   which pushes them to the next SPU, and so on.  A SPU generally processes
   one command and then moves on.  In contrast, ICE-T uses a \emph{pull}
   model.  ICE-T can perform compositions for images that can be much larger
-  then what the available graphics card can render in one pass.  It
+  than what the available graphics card can render in one pass.  It
   therefore may have to pull several images of the same geometry rendered
   with different projections.  For this to be performed in a Chromium SPU,
   the entire OpenGL stream would have to be cached each frame.  This would
   be very inefficient for large amounts of geometry, which ICE-T was
   specifically designed to handle.  We briefly considered Chromium hints
   and extensions that might make the application's data available.
-  Ultimately we decided that trying to shoehorn ICE-T into Chromium like
+  Ultimately, we decided that trying to shoehorn ICE-T into Chromium like
   this would require applications to be so tailored to the ICE-T SPU that
   they might as well use the ICE-T API directly.
 
@@ -496,13 +498,13 @@
   applications using a composite manager such as ParaView is to place the
   user interface at node 0 where the image is displayed \cite{Law01}.  This
   is problematic with a tile display for several reasons.  The most
-  prevailing problem for us is the fact that, for security reasons, our
+  significant problem for us is the fact that, for security reasons, our
   display wall and driving cluster are in different rooms, separated by a
-  bolted steel door.  Instead, our user interface resides on a ``steering
-  station,'' a separate PC located in view of the display and connected to
-  the cluster via a standard Ethernet connection.  Changes made in the user
-  interface running on the steering station are then propagated to the
-  images on the display wall.
+  bolted steel door.  Instead, our user interface resides on a
+  \keyterm{steering station,} a separate PC located in view of the display
+  and connected to the cluster via a standard Ethernet connection.  Changes
+  made in the user interface running on the steering station are then
+  propagated to the images on the display wall.
 
   It so happens that this exact functionality is already implemented by the
   desktop delivery objects described in Section \ref{sec:desktop_delivery}
@@ -511,7 +513,7 @@
   select the display.  If displaying to the client, the behavior is as
   described in Section \ref{sec:desktop_delivery}.  If displaying to the
   server, the render windows on the server side are never resized and
-  images are not transfered back to the client.  The client simply renders
+  images are not transferred back to the client.  The client simply renders
   a very coarse representation of the geometry, which is a bounding box by
   default.
 
@@ -519,7 +521,7 @@
   \begin{figure}
     \includegraphics[width=\linewidth]{images/scaling_icet_weak}
     \caption{Scaling of sort last parallel rendering.  ICE-T is used to
-      render to various tile layouts.  The performance of the compositer
+      render to various tile layouts.  The performance of the compositor
       distributed with VTK is also measured.  Each application processor
       renders about 7.4 million triangles (i.e. larger jobs have more
       triangles).}
@@ -544,7 +546,7 @@
   display to high-resolution power walls.  By using both the image-centric
   level of detail provided by the reduction factors in conjunction with the
   geometry-centric level of detail directly provided by VTK, we can achieve
-  highly interactive rendering with almost any image transfer, compositing,
+  highly interactive rendering for almost any image transfer, compositing,
   or rendering speeds.  \sticky{Some empirical evidence, i.e. with LLNL
   data, would probably be good here.  But how?  You really need a video and
   see it in action.}
@@ -651,9 +653,9 @@
 
   While the concept of a steering station allows an arbitrarily complex
   user interface, it can be less than ideal.  Often, we find the user
-  jumping between the steering station and the wall.  We would like to
-  incorporate a hand-held device that could move with the user and at least
-  provide navigation controls.
+  walking to the wall for a closer look and back to the steering station to
+  drive the application.  We would like to incorporate a hand-held device
+  that could move with the user and at least provide navigation controls.
 
 
   \section{Acknowledgments}
