@@ -27,6 +27,7 @@
 \acmformat{print}
 
 \newcommand{\cidentifier}[1]{\texttt{#1}}
+\newcommand{\keyterm}[1]{\textbf{#1}}
 
 \title{From Cluster to Wall with VTK}
 
@@ -47,14 +48,14 @@
   \maketitle
 
   \begin{abstract}
-    This paper describes a new parallel rendering component for VTK, the
-    Visualization Toolkit.  The parallel rendering unit allows for vast
-    quantities of geometry to be rendered on cluster computers.
-    Furthermore, the geometry may be displayed on tiled displays at full or
-    reduced resolution.  We demonstrate an interactive VTK application
-    processing an isosurface consisting of nearly half a billion triangles
-    and displaying on a power wall with a total resolution of 60
-    Mega-pixels ($60*2^{20}$ pixels).  We also demonstrate an interactive
+    This paper describes a new set of parallel rendering components for
+    VTK, the Visualization Toolkit.  The parallel rendering unit allows for
+    the rendering of vast quantities of geometry with a focus on cluster
+    computers.  Furthermore, the geometry may be displayed on tiled
+    displays at full or reduced resolution.  We demonstrate an interactive
+    VTK application processing an isosurface consisting of nearly half a
+    billion triangles and displaying on a power wall with a total
+    resolution of 63 million pixels.  We also demonstrate an interactive
     VTK application displaying the same geometry on a desktop connected to
     the cluster via a TCP/IP socket over 100BASE-T Ethernet.
   \end{abstract}
@@ -83,9 +84,9 @@
   to use, if they are aware of the tools' existence at all.  Often this
   results in tools being unused.
 
-  To alleviate these problems, we have chosen to leverage VTK, the
-  Visualization Toolkit \cite{Schroeder98}.  VTK is an open-source API
-  containing a comprehensive suite of visualization tools.  More
+  To alleviate these problems, we have chosen to leverage \keyterm{the
+  Visualization Toolkit} (VTK) \cite{Schroeder98}.  VTK is an open-source
+  API containing a comprehensive suite of visualization tools.  More
   importantly, VTK incorporates an extensible, component-based
   architecture.  Our new approach to delivering visualization tools is to
   wrap these tools into VTK components and store these components in a
@@ -105,10 +106,10 @@
   computers running distributed memory algorithms.  The creation of such
   high fidelity models also necessitates the use of high fidelity displays
   for visualization.  To realize these high resolution displays we build
-  ``power walls,'' projected displays driven by tiled arrays of commodity
-  projectors.  We require our VTK applications to run interactively on
-  clustered computers while either driving a power wall or shipping images
-  back to a remote computer for desktop delivery.
+  \keyterm{power walls,} projected displays driven by tiled arrays of
+  commodity projectors.  We require our VTK applications to run
+  interactively on clustered computers while either driving a power wall or
+  shipping images back to a remote computer for desktop delivery.
 
   \begin{figure}
     \center
@@ -129,6 +130,18 @@
   This paper describes our work adding modules to VTK that can
   interchangeably perform various cluster-driven parallel rendering
   algorithms.
+
+
+  %This figure really belongs to sec:parallel_rendering_interface, but it's
+  %moved up so that it resides on the same page as the section.
+  \begin{figure*}
+    \begin{center}
+      \includegraphics[width=4in]
+		      {images/ParallelRenderManagerInteraction}
+    \end{center}
+    \caption{Interactions of the parallel render manager during render.}
+    \label{fig:parallel_render_manager_interaction}
+  \end{figure*}
 
 
   \section{Previous Work}
@@ -159,27 +172,38 @@
   parallel rendering.  We describe our efforts to make VTK applications
   Chromium aware.
 
-  Another power wall display solution available to us is ICE-T, the Image
-  Composite Engine for Tiles.  The ICE-T API is an implementation of the
-  work presented by Moreland, Wylie, and Pavlakos for efficiently
+  Another power wall display solution available to us is the Image
+  Composite Engine for Tiles (ICE-T).  The ICE-T API is an implementation
+  of the work presented by Moreland, Wylie, and Pavlakos for efficiently
   performing sort-last parallel rendering onto tile displays
   \cite{Moreland01}.  The ICE-T methodology for rendering fits well with
   VTK's existing parallel rendering paradigm.  We therefore implemented a
   new parallel rendering engine for VTK using the ICE-T API.
 
 
+  %This figure really belongs to sec:desktop_delivery, but it's moved up so
+  %that it resides on the same page as the section.
+  \begin{figure*}[ht]
+    \begin{center}
+      \includegraphics[width=4in]{images/DesktopDeliveryInteraction}
+      \caption{Interactions during rendering with desktop delivery.}
+      \label{fig:desktop_delivery_interaction}
+    \end{center}
+  \end{figure*}
+
+
   \section{Parallel Rendering Interface}
   \label{sec:parallel_rendering_interface}
 
   Parallel rendering in VTK is supported via the
-  \cidentifier{vtk\-Composite\-Manager} class.  This class works by
-  listening for render events on any renderable VTK window.  After each
+  \keyterm{\cidentifier{vtk\-Composite\-Manager}} class.  This class works
+  by listening for render events on any renderable VTK window.  After each
   render, but before the images are presented to the user,
   \cidentifier{vtk\-Composite\-Manager} reads back the frame buffers,
   performs a sort-last compositing, and writes the image back to the frame
   buffer.
 
-  While \cidentifier{vtk\-Composite\-Manager} provides much of the
+  Although \cidentifier{vtk\-Composite\-Manager} provides much of the
   functionality we need for our parallel rendering tools, it is
   unnecessarily constrained to a single mode of parallel rendering.  Our
   initial approaches to creating parallel rendering modules involved
@@ -189,21 +213,13 @@
   Attempting to work around this limitation resulted in obfuscated code.
 
   Our response was to create a new class,
-  \cidentifier{vtk\-Parallel\-Render\-Manager}.  It works in a manner
-  similar to \cidentifier{vtk\-Composite\-Manager} in that they both listen
-  to render events and perform appropriate actions around them.  The
-  difference is \cidentifier{vtk\-Parallel\-Render\-Manager} is an abstract
-  class designed to give subclasses as much or as little control as they
-  need.
+  \keyterm{\cidentifier{vtk\-Parallel\-Render\-Manager}}.  It works in a
+  manner similar to \cidentifier{vtk\-Composite\-Manager} in that they both
+  listen to render events and perform appropriate actions around them.  The
+  difference is that \cidentifier{vtk\-Parallel\-Render\-Manager} is an
+  abstract class designed to give subclasses as much or as little control
+  as they need.
 
-  \begin{figure*}
-    \begin{center}
-      \includegraphics[width=4in]
-		      {images/ParallelRenderManagerInteraction}
-    \end{center}
-    \caption{Interactions of the parallel render manager during render.}
-    \label{fig:parallel_render_manager_interaction}
-  \end{figure*}
   Figure \ref{fig:parallel_render_manager_interaction} outlines how the
   \cidentifier{vtk\-Parallel\-Render\-Manager} behaves during a render
   event.  After the ``master'' or ``root'' parallel render manager receives
@@ -216,9 +232,10 @@
   allow a subclass to perform any other necessary processing before the
   actual render occurs.
 
-  Control is relinquished back to the render window, which proceeds to
-  perform the actual image synthesis.  Afterwords, each render window sends
-  an end render event to its respective parallel render manager.  The
+  The \cidentifier{vtk\-Parallel\-Render\-Manager} then relinquishes
+  control back to the render window, which proceeds to perform the actual
+  image synthesis.  Afterwords, each render window sends an end render
+  event to its respective parallel render manager.  The
   \cidentifier{vtk\-Parallel\-Render\-Manager} calls yet another protected
   virtual function to allow subclasses to perform any post-processing, such
   as image composition.
@@ -254,14 +271,14 @@
   applications.
 
   We have also implemented a class called
-  \cidentifier{vtk\-Composite\-Render\-Manager}.  This class is identical
-  in features to the \cidentifier{vtk\-Composite\-Manager} distributed with
-  VTK.  However, having it also inherit from
+  \keyterm{\cidentifier{vtk\-Composite\-Render\-Manager}}.  This class is
+  identical in features to the \cidentifier{vtk\-Composite\-Manager} class
+  distributed with VTK.  However, having it also inherit from
   \cidentifier{vtk\-Parallel\-Render\-Manager} allows it to play with our
   applications along with our other parallel rendering classes.  The code
   for \cidentifier{vtk\-Composite\-Render\-Manager} is quite small since
   \cidentifier{vtk\-Parallel\-Render\-Manager} does most of the work.  It
-  took very little time to code and debug
+  took us very little time to code and debug
   \cidentifier{vtk\-Composite\-Render\-Manager}.  Our goal is to integrate
   these changes into VTK's composite manager.
 
@@ -277,26 +294,18 @@
   network.
 
   To this end, we have built a pair of collaborating objects:
-  \cidentifier{vtk\-Desktop\-Delivery\-Client} and
-  \cidentifier{vtk\-Desktop\-Delivery\-Server}.  The client object is
-  responsible for accepting user input and displaying rendered images.  The
-  server object is responsible for the visualization processing and
-  rendering.  The two objects are connected together with a pair of
-  \cidentifier{vtk\-Multi\-Process\-Controller} objects.
+  \keyterm{\cidentifier{vtk\-Desktop\-Delivery\-Client}} and
+  \keyterm{\cidentifier{vtk\-Desktop\-Delivery\-Server}}.  The client
+  object is responsible for accepting user input and displaying rendered
+  images.  The server object is responsible for the visualization
+  processing and rendering.  The two objects are connected together with a
+  pair of \cidentifier{vtk\-Multi\-Process\-Controller} objects.
   \cidentifier{vtk\-Multi\-Process\-Controller}, which is part of the VTK
   distribution, is an abstract interface to parallel process control and
   communication.  The desktop delivery objects expect the process
-  controller to control exactly two objects with client and server in
-  opposite processes.  The controller is typically implemented with a
+  controller to control exactly two processes with client and server in
+  opposite processes.  The controller used is typically implemented with a
   socket, but does not have to be.
-
-  \begin{figure*}[ht]
-    \begin{center}
-      \includegraphics[width=4in]{images/DesktopDeliveryInteraction}
-      \caption{Interactions during rendering with desktop delivery.}
-      \label{fig:desktop_delivery_interaction}
-    \end{center}
-  \end{figure*}
 
   The \cidentifier{vtk\-Desktop\-Delivery\-Client} object attaches itself
   as an observer to a render window.  When a render event occurs, the
@@ -317,7 +326,7 @@
   this, both \cidentifier{vtk\-Desktop\-Delivery\-Client} and
   \cidentifier{vtk\-Desktop\-Delivery\-Server} inherit from
   \cidentifier{vtk\-Parallel\-Render\-Manager}.  While this inheritance
-  strains the ``is-a'' requirement dictated by good object-oriented program
+  strains the \emph{is-a} requirement dictated by good object-oriented program
   design, we feel the amount of code re-use we achieved was too important
   to neglect.  Furthermore, by inheriting from
   \cidentifier{vtk\-Parallel\-Render\-Manager} we were able to take
@@ -341,14 +350,14 @@
   \label{sec:chromium}
 
   We also need to drive power walls in our parallel VTK applications.  One
-  means of doing this is with the Chromium system \cite{Humphreys02}.
-  Chromium intercepts a stream of OpenGL commands and filters them.
-  Chromium's filters are pluggable components called stream processing
-  units (SPUs).  One such unit distributed with Chromium is the
-  \cidentifier{tile\-sort} SPU.  The \cidentifier{tile\-sort} SPU
-  determines the area of the screen that groups of primitives occupy and
-  ships them to cluster nodes responsible for displaying that portion of
-  the screen.
+  means of doing this is with the \keyterm{Chromium} system
+  \cite{Humphreys02}.  Chromium intercepts a stream of OpenGL commands and
+  filters them.  Chromium's filters are pluggable components called
+  \keyterm{stream processing units} (SPUs).  One such unit distributed with
+  Chromium is the \keyterm{\cidentifier{tile\-sort}} SPU.  The
+  \cidentifier{tile\-sort} SPU determines the area of the screen that
+  groups of primitives occupy and ships them to cluster nodes responsible
+  for displaying that portion of the screen.
 
   Because Chromium has the ability to put itself in place of an OpenGL
   shared object library, it can provide a tile display and/or a number of
@@ -361,8 +370,8 @@
   Chromium aware so that we can use it in parallel.
 
   To make our VTK applications Chromium aware, we built the
-  \cidentifier{vtk\-Cr\-Render\-Manager} object.  Because the parallel
-  rendering is really being handled by Chromium,
+  \keyterm{\cidentifier{vtk\-Cr\-Render\-Manager}} object.  Because the
+  parallel rendering is really being handled by Chromium,
   \cidentifier{vtk\-Cr\-Render\-Manager} does little but allow its
   superclass, \cidentifier{vtk\-Parallel\-Render\-Manager}, to propagate
   render events and parameters.  We also implemented
@@ -396,10 +405,10 @@
   SPU does just that.  Like most sort-last parallel renderers,
   \cidentifier{binary\-swap} scales well with the size of geometry being
   rendered and the number of processors doing the rendering, but at the
-  expense of frame rate speeds.  More importantly, the sort-last technique
-  is very sensitive to the resolution of the output display.  Generating
-  images that fit on a typical desktop is feasible, but generating images
-  on high resolution tiled displays is not.  We are currently considering
+  expense of frame rate speeds.  Yet, the sort-last technique is very
+  sensitive to the resolution of the output display.  Generating images
+  that fit on a typical desktop is feasible, but generating images on high
+  resolution tiled displays is not.  We are currently considering
   techniques that may use \cidentifier{tile\-sort} and
   \cidentifier{binary\-swap} to better distribute the work for large
   amounts of data on tiled displays.
@@ -421,25 +430,25 @@
   \section{ICE-T}
   \label{sec:ICE-T}
 
-  Another power wall display solution available to us is ICE-T, the Image
-  Composite Engine for Tiles.  The ICE-T API allows applications to easily
-  perform sort-last parallel rendering.  It uses several image space
-  reduction and compression techniques to make the composition of even high
-  resolution tiled displays feasible.  The details if ICE-T's algorithms
-  can be found in \cite{Moreland01}.
+  Another power wall display solution available to us is \keyterm{the Image
+  Composite Engine for Tiles} (ICE-T).  The ICE-T API allows applications
+  to easily perform sort-last parallel rendering.  It uses several image
+  space reduction and compression techniques to make the composition of
+  even high resolution tiled displays feasible.  The details if ICE-T's
+  algorithms can be found in \cite{Moreland01}.
 
   Our initial goal was to embed ICE-T into a Chromium SPU.  However, we
   quickly found that this is an impractical target.  The Chromium SPUs,
-  because they operate on streams of OpenGL commands, use a ``push'' model.
-  That is, the application pushes OpenGL commands to the first SPU, which
-  pushes them to the next SPU, and so on.  A SPU generally processes one
-  command and then moves on.  In contrast, ICE-T uses a ``pull'' model.
-  ICE-T can perform compositions for images that can be much larger then
-  what the available graphics card can render in one shot.  It therefore
-  may have to pull several images of the same geometry rendered with
-  different projections.  For this to be performed in a Chromium SPU, the
-  entire OpenGL stream would have to be cached each frame.  This would be
-  very inefficient for large amounts of geometry, which ICE-T was
+  because they operate on streams of OpenGL commands, use a \emph{push}
+  model.  That is, the application pushes OpenGL commands to the first SPU,
+  which pushes them to the next SPU, and so on.  A SPU generally processes
+  one command and then moves on.  In contrast, ICE-T uses a \emph{pull}
+  model.  ICE-T can perform compositions for images that can be much larger
+  then what the available graphics card can render in one shot.  It
+  therefore may have to pull several images of the same geometry rendered
+  with different projections.  For this to be performed in a Chromium SPU,
+  the entire OpenGL stream would have to be cached each frame.  This would
+  be very inefficient for large amounts of geometry, which ICE-T was
   specifically designed to handle.  We briefly considered Chromium hints
   and extensions that might make the application's data available.
   Ultimately we decided that trying to shoehorn ICE-T into Chromium like
@@ -447,36 +456,36 @@
   they might as well use the ICE-T API directly.
 
   We were able to instead embed ICE-T into the VTK framework.  We found
-  this much more practical because, like ICE-T, VTK uses a pull model.  A
-  render request is given to the window at the bottom of the VTK pipeline.
-  The event is propagated up the pipeline as each component pulls fresh
-  geometry or images from the component above it.  ICE-T fits well in this
-  framework.
+  this much more practical because, like ICE-T, VTK uses a \emph{pull}
+  model.  A render request is given to the window at the bottom of the VTK
+  pipeline.  The event is propagated up the pipeline as each component
+  pulls fresh geometry or images from the component above it.  ICE-T fits
+  well in this framework.
 
   To start, we built an object called
-  \cidentifier{vtk\-Ice\-T\-Render\-Manager}.  As always, this class
-  inherits from \cidentifier{vtk\-Parallel\-Render\-Manager}.  As such, it
-  attaches itself to a render window and listens for render events.
-  \cidentifier{vtk\-Ice\-T\-Render\-Manager} works in conjunction with the
-  ICE-T API to compose images.
+  \keyterm{\cidentifier{vtk\-Ice\-T\-Render\-Manager}}.  As always, this
+  class inherits from \cidentifier{vtk\-Parallel\-Render\-Manager}.  As
+  such, it attaches itself to a render window and listens for render
+  events.  \cidentifier{vtk\-Ice\-T\-Render\-Manager} works in conjunction
+  with the ICE-T API to compose images.
 
   However, ICE-T also must in some cases transform the projection matrix
   and perform several renderings.  This behavior is beyond that of a
-  \cidentifier{vtk\-Parallel\-Render\-Manager} unit.  So we designed an
+  \cidentifier{vtk\-Parallel\-Render\-Manager} unit, so we designed an
   object called \cidentifier{vtk\-Ice\-T\-Renderer} to handle this.
-  \cidentifier{vtk\-Ice\-T\-Renderer} responds to ICE-T render requests and
-  returns the appropriate images.  The ICE-T render manager object will
-  create ICE-T renderer objects for the user.
+  \keyterm{\cidentifier{vtk\-Ice\-T\-Renderer}} responds to ICE-T render
+  requests and returns the appropriate images.  The ICE-T render manager
+  object will create ICE-T renderer objects for the user level application.
 
   The ICE-T render manager also builds on the concept of image reduction.
   Unlike the image reduction of the parent
   \cidentifier{vtk\-Parallel\-Render\-Manager} class, the ICE-T render
   manager does not reduce the size of the renderable viewport.  Recall that
   in a tiled display, the overall display size is larger than any one
-  image.  ICE-T uses an extension of the ``floating viewport'' described in
-  Moreland, Wylie, and Pavlakos \cite{Moreland01} to render images spanning
-  multiple tiles and therefore reduce the number of times the geometry must
-  be rendered.
+  image.  ICE-T uses an extension of the \emph{floating viewport} described
+  in Moreland, Wylie, and Pavlakos \cite{Moreland01} to render images
+  spanning multiple tiles and therefore reduce the number of times the
+  geometry must be rendered.
 
 
   \section{Steering Station}
@@ -506,6 +515,23 @@
   a very coarse representation of the geometry, which is a bounding box by
   default.
 
+
+  \begin{figure}
+    \includegraphics[width=\linewidth]{images/scaling_icet_weak}
+    \caption{Weak scaling of sort last parallel rendering.  ICE-T is used
+      to render to various tile layouts.  The performance of the compositer
+      distributed with VTK is also measured.  Each application processor
+      renders about 7.4 million triangles.}
+    \label{fig:ice-t}
+  \end{figure}
+
+  \begin{figure}
+    \includegraphics[width=\linewidth]{images/scaling_chromium}
+    \caption{Weak scaling of parallel rendering using Chromium's
+      \cidentifier{tile\-sort} SPU.  Each client renders about 7.4 million
+      triangles.  Measurements were taken using a 100BaseT network.}
+    \label{fig:chromium}
+  \end{figure}
 
   \section{Discussion}
   \label{sec:discussion}
@@ -544,8 +570,8 @@
 %%   taken from a job that runs on 32 processors and displays on 9 tiles, each
 %%   having a resolution of $1280 \times 1024$ pixels.  When the input
 %%   geometry is relatively small, Chromium's \cidentifier{tile\-sort} can
-%%   generate real time frame rates of 30 Hz or better, while ICE-T's
-%%   sort-last approach can barely run over 5 Hz.  However, when the input
+%%   generate real time frame rates of 30~Hz or better, while ICE-T's
+%%   sort-last approach can barely run over 5~Hz.  However, when the input
 %%   geometry is larger than 20 million polygons, the overhead of compositing
 %%   images in the sort-last approach becomes smaller than the overhead of
 %%   transferring polygons in the sort-first approach.  Therefore, in this
@@ -557,43 +583,29 @@
 %%   don't have the Chromium stuff working on our cluster.  It's driving me
 %%   nucking futs.}
 
-  \begin{figure}
-    \includegraphics[width=\linewidth]{images/scaling_icet_weak}
-    \caption{Weak scaling of sort last parallel rendering.  ICE-T is used
-      to render to various tile layouts.  The performance of the compositer
-      distributed with VTK is also measured.  Each application processor
-      renders about 7.4 million triangles.}
-    \label{fig:ice-t}
-  \end{figure}
-
-  \begin{figure}
-    \includegraphics[width=\linewidth]{images/scaling_chromium}
-    \caption{Weak scaling of parallel rendering using Chromium's
-      \cidentifier{tile\-sort} SPU.  Each client renders about 7.4 million
-      triangles}
-    \label{fig:chromium}
-  \end{figure}
-
   Our ability to abstractly swap the parallel rendering method is of
   tremendous importance.  Each method of parallel rendering has its own
   strengths and weaknesses, and it may be imperative to pick the method
   that best fits the current usage for the system.  For example, when using
-  our sort last methods on our cluster, \sticky{give hardware specifics
-  here, }we find that even with very little geometry we can achieve frame
-  rates of only about 10 Hz for our tile displays due to the overhead of
-  image compositing.  However, as can be seen in Figure \ref{fig:ice-t},
-  with sufficiently large input geometry we can achieve very impressive
+  our sort last methods on our cluster (comprised of 128 Dell Precision 530
+  workstations, each with dual 2.0 GHz Pentium-4 Xeon CPUs, 1 GB RDRAM, a
+  GeForce 3 graphics card, and interconnected with Myrinet 2000), we find
+  that even with very little geometry we can achieve frame rates of only
+  about 10~Hz for our tile displays due to the overhead of image
+  compositing.  However, as can be seen in Figure \ref{fig:ice-t}, with
+  sufficiently large input geometry we can achieve very impressive
   rendering performance even on tiled displays.  In contrast, the Chromium
-  \cidentifier{tile\-sort} SPU has been shown to be able to render in frame
-  rates in excess of 40 Hz \cite{Humphreys02}.  However, our current method
-  of rendering has the number of Chromium ``server'' nodes fixed to the
-  number of tiles and we see from Figure \ref{fig:chromium} that we get
+  \cidentifier{tile\-sort} SPU has been shown to be able to render with
+  frame rates in excess of 40~Hz \cite{Humphreys02}.  However, our current
+  method of rendering has the number of Chromium ``server'' nodes fixed to
+  the number of tiles and we see from Figure \ref{fig:chromium} that we get
   negative returns attempting to use more than about four application
   processes.  Thus, we can only use our current Chromium configuration with
   modest sized data.  It is conceivable to build other Chromium
   configurations that allow for better rendering performance of large data
   on tile displays, but race conditions existing in the Chromium network
-  layer at the time of this writing have prohibited us from doing so.
+  layer at the time of this writing have prohibited us from experimenting
+  in this arena.
 
 %%   One drawback of the ICE-T composite objects is that they only work with
 %%   OpenGL rendering and MPI communications.  This is because, due to
@@ -612,11 +624,11 @@
   Our desktop delivery objects allow for any type of interface to be built
   on the client side.  However, we currently have not built a GUI capable
   of much more than simple navigation controls.  Ultimately, we would like
-  a fully-featured visualization tool such as ParaView \cite{Law01} to be
-  presented at the desktop.  We currently have a contract with Kitware
-  (\href{http://www.kitware.com}{www.kitware.com}) to incorporate the
-  technologies described in this paper into ParaView.  The latest version
-  of ParaView is available free from
+  a fully-featured visualization tool such as \keyterm{ParaView}
+  \cite{Law01} to be presented at the desktop.  We currently have a
+  contract with Kitware (\href{http://www.kitware.com}{www.kitware.com}) to
+  incorporate the technologies described in this paper into ParaView.  The
+  latest version of ParaView is available free from
   \href{http://www.paraview.org}{www.paraview.org}.
 
   The two methods of rendering to tile walls discussed have diametrical
@@ -656,10 +668,10 @@
   \begin{figure*}[!p]
     \includegraphics[width=\textwidth]{images/FullWall}
     \caption{The VIEWS Corridor display.  The display contains about 63
-    million pixels.  The isosurface being displayed contains about 450
+    million pixels.  The isosurface being displayed contains about 470
     million triangles.  Our VTK application can render this isosurface on
     our display in about 15 seconds.  With coarser levels of both geometric
-    and image detail, we can sustain a minimum frame rate of 5--10 Hz.
+    and image detail, we can sustain a minimum frame rate of 5--10~Hz.
     \sticky{Might want to verify that.}}
     \label{fig:fullwall}
   \end{figure*}
