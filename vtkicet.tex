@@ -23,7 +23,7 @@
   quantities of geometry to be rendered on cluster computers.  Furthermore,
   the geometry may be displayed on tiled displays at full or reduced
   resolution.  We have demonstrated an interactive VTK application
-  processing an isosurface consisting of nearling half a billion triangles
+  processing an isosurface consisting of nearly half a billion triangles
   and displaying on a power wall with a total resolution of 60 Mega-pixels
   ($60*2^{20}$ pixels) in an interactive application.  We also demonstrate
   an interactive VTK application displaying the same geometry on a desktop
@@ -39,11 +39,11 @@ new tool to our analysts.  Until recently, our best solution was to wrap
 the tool in its own user interface.  This proliferation of visualization
 tools wastes human resources on many fronts.  It requires our researchers
 to design, build, and maintain user interfaces for their tools.  Since our
-visualization researchers are often neither motivated nor experieced at
+visualization researchers are often neither motivated nor experienced at
 designing user interfaces, the tool interfaces are often ill-conceived,
 rarely consistent, and never tightly coupled.  Analysts are forced to learn
 a wide variety of interfaces for the tools they wish to use, if they are
-aware of the tools' existance at all.  Often this results in tools being
+aware of the tools' existence at all.  Often this results in tools being
 unused.
 
 To alleviate these problems, we have chosen to leverage VTK, the
@@ -53,10 +53,9 @@ VTK incorporates an extendible component-based architecture.  Our new
 approach to delivering visualization tools is to wrap these tools into VTK
 components and store these components in a common component library.  This
 should allow each tool to work together with current and future tools under
-the same, consistent user interface.  All three national labs, Sandia, Las
-Alamos, and Lawrence Livermore \sticky{Am I right in saying \emph{the}
-national labs, or is there some other classification?  Are they the three
-DOE labs?}, have agreed to make VTK the R\&D platform for visualization.
+the same, consistent user interface.  All three DOE national labs, Sandia,
+Las Alamos, and Lawrence Livermore, have agreed to make VTK the R\&D
+platform for visualization.
 
 Our visualization needs put a large strain on VTK.  ASCI routinely creates
 simulations on the order of 50 million cells \cite{Heermann99}, and it is
@@ -77,10 +76,10 @@ desktop delivery.
 \section{Previous Work}
 \label{sec:previous_work}
 
-Thanks to a recent collaberation between Kitware and the ASCI/VIEWS
+Thanks to a recent collaboration between Kitware and the ASCI/VIEWS
 program, VTK now supports parallel programming and can be run on cluster
 computers \cite{Ahrens00}.  The parallel VTK libraries support several
-parallel modes.  The mode we consern ourselves with in this paper is
+parallel modes.  The mode we concern ourselves with in this paper is
 ``data'' parallelism in which the input data is split amongst processes,
 the pieces are filtered and rendered independently, and then composited to
 one image in the end.  This method allows us to make effective use of the
@@ -92,7 +91,7 @@ streaming mode to perform out-of-core processing of data.}.
 While parallel visualization and rendering are now supported by VTK,
 display to a power wall and desktop delivery currently are not.  One
 possible approach is to use Chromium \cite{Humphreys02}.  Chromium is
-capable of replacing the OpenGL library loaded by an appliaction at
+capable of replacing the OpenGL library loaded by an application at
 runtime, intercepting the stream of OpenGL commands, and performing several
 altercations to it, including driving a power wall.  Unfortunately, an
 OpenGL stream is inherently serial and must be issued from a single
@@ -125,7 +124,7 @@ typical desktop machine connected via a modest LAN connection.
   \begin{center}
     \includegraphics[scale=0.23]{images/DesktopDeliveryClasses}
   \end{center}
-  \caption{UML diagrams for desktop delivery objects.}
+  \caption{Desktop delivery objects.}
   \label{fig:desktop_delivery_classes}
 \end{figure*}
 
@@ -136,8 +135,8 @@ displays rendered images, and one for the server, which performs the
 visualization processing and rendering.  The two objects are connected
 together with a pair of vtkMultiProcessController objects.
 vtkMultiProcessController is an abstract interface to parallel process
-controll and communication.  The desktop delivery objects expect the proces
-controller to controll exactly two objects with client and server in
+control and communication.  The desktop delivery objects expect the process
+controller to control exactly two objects with client and server in
 opposite processes.  The controller is typically implemented with a socket,
 but does not have to be.
 
@@ -152,14 +151,14 @@ but does not have to be.
 The desktop delivery client object attaches itself as an observer to a
 render window.  When a render event occurs, the desktop delivery client
 object sends a render request to the server, waits for an image to come
-back, and pasts the image to the window.  Figure
+back, and pastes the image to the window.  Figure
 \vref{fig:desktop_delivery_interaction} shows the details of this process.
 
 Because the desktop delivery server was designed to enable delivery from
 clusters, it can optionally work with a vtkCompositeManager object, which
 is the object VTK uses to perform sort-last parallel rendering.  The
 desktop delivery server object uses the composite manager to compute the
-complete object bounds, get timing statistics, and otherwise controll the
+complete object bounds, get timing statistics, and otherwise control the
 parallel rendering process.
 
 We also want the remote rendering's interactivity to be resilient to
@@ -181,14 +180,14 @@ the render window.
   \begin{center}
     \includegraphics[scale=0.23]{images/IceTCompositeClasses}
   \end{center}
-  \caption{UML diagram for tiled display compositing.}
+  \caption{Tiled display compositing classes.}
   \label{fig:tiled_display_classes}
 \end{figure*}
 
 We also greatly desire to drive power walls in our parallel VTK
 applications.  We did this by wrapping our ICE-T API in VTK objects.
 First, we subclassed vtkCompositeManager to allow ICE-T to be a drop-in
-replacement for any VTK compositor.  Unfortunatly, the ICE-T API exhibits
+replacement for any VTK compositor.  Unfortunately, the ICE-T API exhibits
 behavior that goes above and beyond what the VTK composite manager does.
 In particular, because ICE-T generates images larger than the renderable
 window of any given display, it must be able to render the same geometry
@@ -200,7 +199,7 @@ conjunction with the ICE-T composite manager, the ICE-T renderer invokes
 the ICE-T API to manipulate projection matrices, render multiple viewing
 frustums, and compose multiple images in parallel.  The ICE-T composite
 manager does nothing but emit errors if not used with an ICE-T renderer.  A
-diagram of these objects collaborate are shown in figure
+diagram of how these objects collaborate is shown in figure
 \vref{fig:tiled_display_classes}.
 
 Like the desktop delivery and other forms of the vtkCompositeManager
@@ -221,9 +220,9 @@ is problematic with a tile display for several reasons.  The most
 prevailing problem for us is the fact that, for security reasons, our
 display wall and driving cluster are in different rooms, separated by a
 bolted steel door.  Instead, our user interface resides on a ``steering
-station,'' a separate PC located with the display and connected to the
-cluster via a standard Ethernet connection.  Changes made in the user
-interface running on the steering station are then propgated to the images
+station,'' a separate PC located in view of the display and connected to
+the cluster via a standard Ethernet connection.  Changes made in the user
+interface running on the steering station are then propagated to the images
 on the display wall.
 
 It so happens that this exact functionality is already implemented by the
@@ -244,8 +243,7 @@ With the introduction of the desktop delivery and ICE-T components into
 VTK, we have shown that VTK is a viable framework for cluster-based
 interactive applications that require remote display or display to
 high-resolution power walls.  By using both the image-centric
-level-of-detail provided by the reduction factor functionality of the
-desktop delivery and ICE-T components in conjunction with the
+level-of-detail provided by the reduction factors in conjunction with the
 geometry-centric level-of-detail directly provided by VTK, we can achieve
 highly interactive rendering with almost any image transfer, compositing,
 or rendering speeds.  \sticky{Some empirical evidence, i.e. with LLNL data,
@@ -258,7 +256,7 @@ OpenGL rendering and MPI communications.  This is because, due to
 historical reasons, the ICE-T API is dependent on the OpenGL and MPI APIs.
 In retrospect, coupling the compositing API with any particular rendering
 or communications API was not beneficial.  Nevertheless, OpenGL and MPI
-remain the de facto \sticky{or should it be \emph{de facto}?} standards.
+remain the \emph{de facto} standards.
 
 
 \section{Future Work}
@@ -277,7 +275,7 @@ interesting to directly compare the two approaches and find the cutoff in
 geometry size, if any, where image compositing outweighs tile sorting.
 
 Our desktop delivery objects allow for any type of interface to be built on
-the client side.  However, we currently have not built a GUI cappable of
+the client side.  However, we currently have not built a GUI capable of
 much more than simple navigation controls.  Ultimately, we would like a
 fully featured visualization tool such as ParaView \cite{Law01} to be
 presented at the desktop.
