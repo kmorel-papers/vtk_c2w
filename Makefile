@@ -55,7 +55,7 @@ pdf: $(TARGET).pdf
 	@echo "[[[ Converting ps to pdf ]]]"
 	ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.3 \
          -dSubsetFonts=true -dEmbedAllFonts=true \
-         -dAutoFilterColorImages=true \
+         -dAutoFilterColorImages=false \
          -dAutoFilterGrayImages=false \
          -dColorImageFilter=/FlateEncode \
          -dGrayImageFilter=/FlateEncode \

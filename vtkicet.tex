@@ -49,7 +49,7 @@
 
   \begin{abstract}
     This paper describes a new set of parallel rendering components for
-    VTK, the Visualization Toolkit.  The parallel rendering unit allows for
+    VTK, the Visualization Toolkit.  The parallel rendering units allow for
     the rendering of vast quantities of geometry with a focus on cluster
     computers.  Furthermore, the geometry may be displayed on tiled
     displays at full or reduced resolution.  We demonstrate an interactive
@@ -96,7 +96,7 @@
   Sandia, Los Alamos, and Lawrence Livermore, are using VTK to some extent
   in their visualization R\&D programs.
 
-  Our visualization needs put a large strain on VTK.  ASCI routinely
+  Our visualization needs put a large strain on VTK.  ASC routinely
   creates simulations on the order of 50 million cells \cite{Heermann99},
   and it is predicted that by 2004 applications will routinely create 250
   million cell simulations requiring up to a petabyte of storage
@@ -147,7 +147,7 @@
   \section{Previous Work}
   \label{sec:previous_work}
 
-  Thanks to a recent collaboration between Kitware and the ASCI/VIEWS
+  Thanks to a recent collaboration between Kitware and the ASC/VIEWS
   program, VTK now supports parallel programming and can be run on cluster
   computers \cite{Ahrens00}.  The parallel VTK libraries support several
   parallel modes.  The mode we concern ourselves with in this paper is data
@@ -252,7 +252,8 @@
       fine control over the rendering process.  As such, it may become
       necessary to override the behavior of renderers and render windows.
       By providing object creation, the parallel render manager can help
-      ensure the rendering objects match the parallel rendering scheme.
+      ensure that the rendering objects match the parallel rendering
+      scheme.
     \item [Boundaries] Will compute the physical boundary, in 3-space, of
       the composite object rendered by all processes.
     \item [Image Reduction] Can reduce the size of the image being rendered
@@ -310,14 +311,14 @@
   socket, but does not have to be.
 
   The \cidentifier{vtk\-Desktop\-Delivery\-Client} object attaches itself
-  as an observer to a render window.  When a render event occurs, the
+  as an observer to a render window.  As shown in Figure
+  \ref{fig:desktop_delivery_interaction}, when a render event occurs, the
   desktop delivery client object sends a render request to the server along
   with the rendering parameters, waits for an image to come back, and
   pastes the image to the window.  As one would expect, the
   \cidentifier{vtk\-Desktop\-Delivery\-Server} object responds to render
   requests from the client by invoking the render window and shipping the
-  resulting image back.  Figure \ref{fig:desktop_delivery_interaction}
-  shows the details of this process.
+  resulting image back.
 
   The reader may notice a striking similarity between the operational
   features of the desktop delivery client/server and the parallel render
@@ -407,13 +408,13 @@
   SPU does just that.  Like most sort-last parallel renderers,
   \cidentifier{binary\-swap} scales well with the size of geometry being
   rendered and the number of processors doing the rendering, but at the
-  expense of frame rate speeds.  Yet, the sort-last technique is very
+  expense of frame rate speeds.  However, the sort-last technique is very
   sensitive to the resolution of the output display.  Generating images
   that fit on a typical desktop is feasible, but generating images on high
   resolution tiled displays is not.  We are currently considering
   techniques that may use \cidentifier{tile\-sort} and
-  \cidentifier{binary\-swap} to better distribute the work for large
-  amounts of data on tiled displays.
+  \cidentifier{binary\-swap} together to better distribute the work for
+  large amounts of data on tiled displays.
 
 %%   Because Chromium is a pluggable architecture supporting both sort-first
 %%   and sort-last parallel rendering algorithms, it is conceivable to use a
@@ -495,7 +496,7 @@
 
   Another important issue with rendering to tiled displays is providing an
   interface with which users can interact.  The typical solution for VTK
-  applications using a composite manager such as ParaView is to place the
+  applications such as ParaView using a composite manager is to place the
   user interface at node 0 where the image is displayed \cite{Law01}.  This
   is problematic with a tile display for several reasons.  The most
   significant problem for us is the fact that, for security reasons, our
@@ -521,7 +522,7 @@
   \begin{figure}
     \includegraphics[width=\linewidth]{images/scaling_icet_weak}
     \caption{Scaling of sort last parallel rendering.  ICE-T is used to
-      render to various tile layouts.  The performance of the compositor
+      render to various tile layouts.  The performance of the compositer
       distributed with VTK is also measured.  Each application processor
       renders about 7.4 million triangles (i.e. larger jobs have more
       triangles).}
@@ -533,18 +534,18 @@
     \caption{Scaling of parallel rendering using Chromium's
       \cidentifier{tile\-sort} SPU.  Each client renders about 7.4 million
       triangles (i.e. larger jobs have more triangles).  Measurements were
-      taken using a 100BaseT network.}
+      taken using a 100BASE-T network.}
     \label{fig:chromium}
   \end{figure}
 
   \section{Conclusion}
   \label{sec:conclusion}
 
-  With the introduction of the desktop delivery, Chromium, and ICE-T
-  components into VTK, we have shown that VTK is a viable framework for
-  cluster-based interactive applications that require remote display or
-  display to high-resolution power walls.  By using both the image-centric
-  level of detail provided by the reduction factors in conjunction with the
+  With the introduction of desktop delivery, Chromium, and ICE-T components
+  into VTK, we have shown that VTK is a viable framework for cluster-based
+  interactive applications that require remote display or display to
+  high-resolution power walls.  By using both the image-centric level of
+  detail provided by the reduction factors in conjunction with the
   geometry-centric level of detail directly provided by VTK, we can achieve
   highly interactive rendering for almost any image transfer, compositing,
   or rendering speeds.  \sticky{Some empirical evidence, i.e. with LLNL
