@@ -310,8 +310,8 @@
 
   The reader may notice a striking similarity between the operational
   features of the desktop delivery client/server and the parallel render
-  manager described in section \ref{sec:parallel_rendering_interface}.  In
-  particular, the interactions shown in figures
+  manager described in Section \ref{sec:parallel_rendering_interface}.  In
+  particular, the interactions shown in Figures
   \ref{fig:parallel_render_manager_interaction} and
   \ref{fig:desktop_delivery_interaction} are nearly identical.  Because of
   this, both \cidentifier{vtk\-Desktop\-Delivery\-Client} and
@@ -411,7 +411,7 @@
 %%   \cidentifier{binary\-swap} SPU to generate a single image per tile.
 %%   Clients could then use the \cidentifier{tile\-sort} SPU to send
 %%   primitives to one processor for each tile.  An example configuration is
-%%   shown in figure \ref{fig:crazy_chromium_crapp}.  While such a setup
+%%   shown in Figure \ref{fig:crazy_chromium_crapp}.  While such a setup
 %%   should enable larger clusters to realize faster rendering rates, it still
 %%   suffers from the same load balancing issues discussed above.
 %%   Furthermore, because each polygon must still be pushed onto the wire, we
@@ -496,11 +496,11 @@
   images on the display wall.
 
   It so happens that this exact functionality is already implemented by the
-  desktop delivery objects described in section \ref{sec:desktop_delivery}
+  desktop delivery objects described in Section \ref{sec:desktop_delivery}
   except that images are displayed on the server rather than shipped back
   the client.  Therefore, the desktop delivery server object has a flag to
   select the display.  If displaying to the client, the behavior is as
-  described in section \ref{sec:desktop_delivery}.  If displaying to the
+  described in Section \ref{sec:desktop_delivery}.  If displaying to the
   server, the render windows on the server side are never resized and
   images are not transfered back to the client.  The client simply renders
   a very coarse representation of the geometry, which is a bounding box by
@@ -514,48 +514,86 @@
   components into VTK, we have shown that VTK is a viable framework for
   cluster-based interactive applications that require remote display or
   display to high-resolution power walls.  By using both the image-centric
-  level-of-detail provided by the reduction factors in conjunction with the
-  geometry-centric level-of-detail directly provided by VTK, we can achieve
+  level of detail provided by the reduction factors in conjunction with the
+  geometry-centric level of detail directly provided by VTK, we can achieve
   highly interactive rendering with almost any image transfer, compositing,
   or rendering speeds.  \sticky{Some empirical evidence, i.e. with LLNL
   data, would probably be good here.  But how?  You really need a video and
   see it in action.}
 
-  \begin{figure}
-%%     \includegraphics[width=\linewidth,viewport=.75in .75in 10.25in 7.75in]
+%%   \begin{figure}
+%% %%     \includegraphics[width=\linewidth,viewport=.75in .75in 10.25in 7.75in]
+%% %% 		    {images/scaling}
+%%     \includegraphics[width=\linewidth,bb=60 76 725 537]
 %% 		    {images/scaling}
-    \includegraphics[width=\linewidth,bb=60 76 725 537]
-		    {images/scaling}
-    \caption{Comparison of rendering times using sort-last and sort-first
-      parallel rendering.}
-    \label{fig:scaling}
+%%     \caption{Comparison of rendering times using sort-last and sort-first
+%%       parallel rendering.}
+%%     \label{fig:scaling}
+%%   \end{figure}
+
+%%   A comparison between a sort-first approach like Chromium's
+%%   \cidentifier{tile\-sort} SPU and a sort-last approach like ICE-T reveals
+%%   very different rendering characteristics.  Figure \ref{fig:scaling} shows
+%%   the rendering performance of ICE-T for various sizes of input geometry
+%%   and the theoretical maxium performance of Chromium\footnote{Initial
+%%   experiments indicate that clients are running at low network efficiencies
+%%   (on the order of 12-14\% of theoretical peak shown in \ref{fig:scaling}),
+%%   which we suspect are due to buffer size and flow control issues in
+%%   Chromium's GM implementation. We are investigating the issue and hope to
+%%   have scaling benchmarks by the time of the conference.}.  The timings are
+%%   taken from a job that runs on 32 processors and displays on 9 tiles, each
+%%   having a resolution of $1280 \times 1024$ pixels.  When the input
+%%   geometry is relatively small, Chromium's \cidentifier{tile\-sort} can
+%%   generate real time frame rates of 30 Hz or better, while ICE-T's
+%%   sort-last approach can barely run over 5 Hz.  However, when the input
+%%   geometry is larger than 20 million polygons, the overhead of compositing
+%%   images in the sort-last approach becomes smaller than the overhead of
+%%   transferring polygons in the sort-first approach.  Therefore, in this
+%%   case the sort-last approach can achieve faster rendering rates, albeit at
+%%   quite low frame rates.
+
+%%   \sticky{Comparison of rendering times of Chromium and ICE-T for various
+%%   geometry sizes.  I would have it here already, but after a month I still
+%%   don't have the Chromium stuff working on our cluster.  It's driving me
+%%   nucking futs.}
+
+  \begin{figure}
+    \includegraphics[width=\linewidth]{images/scaling_icet_weak}
+    \caption{Weak scaling of sort last parallel rendering.  ICE-T is used
+      to render to various tile layouts.  The performance of the compositer
+      distributed with VTK is also measured.  Each application processor
+      renders about 7.4 million triangles.}
+    \label{fig:ice-t}
   \end{figure}
 
-  A comparison between a sort-first approach like Chromium's
-  \cidentifier{tile\-sort} SPU and a sort-last approach like ICE-T reveals
-  very different rendering characteristics.  Figure \ref{fig:scaling} shows
-  the rendering performance of ICE-T for various sizes of input geometry
-  and the theoretical maxium performance of Chromium\footnote{Initial
-  experiments indicate that clients are running at low network efficiencies
-  (on the order of 12-14\% of theoretical peak shown in \ref{fig:scaling}),
-  which we suspect are due to buffer size and flow control issues in
-  Chromium's GM implementation. We are investigating the issue and hope to
-  have scaling benchmarks by the time of the conference.}.  The timings are
-  taken from a job that runs on 32 processors and displays on 9 tiles, each
-  having a resolution of $1280 \times 1024$ pixels.  When the input
-  geometry is relatively small, Chromium's \cidentifier{tile\-sort} can
-  generate real time frame rates of 30 Hz or better, while ICE-T's
-  sort-last approach can barely run over 5 Hz.  However, when the input
-  geometry is larger than 20 million polygons, the overhead of compositing
-  images in the sort-last approach becomes smaller than the overhead of
-  transferring polygons in the sort-first approach.  Therefore, in this
-  case the sort-last approach can achieve faster rendering rates, albeit at
-  quite low frame rates.
+  \begin{figure}
+    \includegraphics[width=\linewidth]{images/scaling_chromium}
+    \caption{Weak scaling of parallel rendering using Chromium's
+      \cidentifier{tile\-sort} SPU.  Each client renders about 7.4 million
+      triangles}
+    \label{fig:chromium}
+  \end{figure}
 
-  \sticky{Comparison of rendering times of Chromium and ICE-T for various
-  geometry sizes.  I would have it here already, but after a month I still
-  don't have the Chromium stuff working on our cluster.  It's driving me
-  nucking futs.}
+  Our ability to abstractly swap the parallel rendering method is of
+  tremendous importance.  Each method of parallel rendering has its own
+  strengths and weaknesses, and it may be imperative to pick the method
+  that best fits the current usage for the system.  For example, when using
+  our sort last methods on our cluster, \sticky{give hardware specifics
+  here, }we find that even with very little geometry we can achieve frame
+  rates of only about 10 Hz for our tile displays due to the overhead of
+  image compositing.  However, as can be seen in Figure \ref{fig:ice-t},
+  with sufficiently large input geometry we can achieve very impressive
+  rendering performance even on tiled displays.  In contrast, the Chromium
+  \cidentifier{tile\-sort} SPU has been shown to be able to render in frame
+  rates in excess of 40 Hz \cite{Humphreys02}.  However, our current method
+  of rendering has the number of Chromium ``server'' nodes fixed to the
+  number of tiles and we see from Figure \ref{fig:chromium} that we get
+  negative returns attempting to use more than about four application
+  processes.  Thus, we can only use our current Chromium configuration with
+  modest sized data.  It is conceivable to build other Chromium
+  configurations that allow for better rendering performance of large data
+  on tile displays, but race conditions existing in the Chromium network
+  layer at the time of this writing have prohibited us from doing so.
 
 %%   One drawback of the ICE-T composite objects is that they only work with
 %%   OpenGL rendering and MPI communications.  This is because, due to
@@ -607,6 +645,10 @@
   Martin Company, for the United States Department of Energy under contract
   DE-AC04-94AL85000.
 
+  We would also like to give a special thanks to Brian Wylie for his
+  support, inspiration, and the encouragement to write this paper in the
+  first place.
+
 
   \bibliographystyle{acmsiggraph}
   \bibliography{vtkicet}
@@ -617,7 +659,7 @@
     million pixels.  The isosurface being displayed contains about 450
     million triangles.  Our VTK application can render this isosurface on
     our display in about 15 seconds.  With coarser levels of both geometric
-    and image detail, we can sustain a rendering rate of about 10 Hz.
+    and image detail, we can sustain a minimum frame rate of 5--10 Hz.
     \sticky{Might want to verify that.}}
     \label{fig:fullwall}
   \end{figure*}

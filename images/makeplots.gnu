@@ -42,6 +42,7 @@ set terminal postscript eps color
 
 set data style linespoints
 set pointsize 1.5
+set size 0.75, 0.75
 
 # -----------------------------------------------------------------------------
 
@@ -105,7 +106,7 @@ plot	'scaling_icet_weak.dat' index 0					\
 
 set output "scaling_chromium.eps"
 set title 'Sort-First Weak Scaling'
-set xlabel "Number of Client Processors"
+set xlabel "Number of Application Processors"
 set ylabel "Rendering Speed (Millions of triangles per second)"
 set xtics autofreq
 set autoscale x
