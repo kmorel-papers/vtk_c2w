@@ -30,10 +30,14 @@
 
 \title{From Cluster to Wall with VTK}
 
-\author{Kenneth~Moreland\thanks{e-mail: kmorel@sandia.gov}\\ Sandia
-  National Laboratories \and
-  David~Thompson\thanks{e-mail:dcthomp@sandia.gov}\\ Sandia National
-  Laboratories}
+%% \author{Kenneth~Moreland\thanks{e-mail: kmorel@sandia.gov}\\ Sandia
+%%   National Laboratories \and
+%%   David~Thompson\thanks{e-mail: dcthomp@sandia.gov}\\ Sandia National
+%%   Laboratories}
+\author{Kenneth~Moreland\thanks{e-mail: kmorel@sandia.gov} \hspace{.2in}
+  David~Thompson\thanks{e-mail: dcthomp@sandia.gov}
+  \\ Sandia National Laboratories}
+
 
 \keywords{parallel rendering, desktop delivery, tile display, PC cluster,
   Chromium, VTK}
@@ -105,6 +109,26 @@
   projectors.  We require our VTK applications to run interactively on
   clustered computers while either driving a power wall or shipping images
   back to a remote computer for desktop delivery.
+
+  \begin{figure}
+    \center
+    \includegraphics[width=1.5in]{images/AppLayers}
+    \caption{A high level view of our proposed visualization system.}
+    \label{fig:applayers}
+  \end{figure}
+  Figure \ref{fig:applayers} shows the layout of the high-level functional
+  components of our system.  Rather than build our user level application
+  directly on top of a graphical API such as OpenGL, we plan to build our
+  applications on top of the VTK framework.  The advantage is twofold: We
+  can leverage the enormous visualization code base available with VTK, and
+  we can build an application that can be flexible enough to accept
+  emerging visualization technologies.  We can also potentially layer VTK
+  on top of Chromium to leverage Chromium's powerful parallel rendering
+  capabilities.  Because Chromium's interface mimics that of OpenGL, we can
+  optionally add or remove that layer with little impact on the system.
+  This paper describes our work adding modules to VTK that can
+  interchangeably perform various cluster-driven parallel rendering
+  algorithms.
 
 
   \section{Previous Work}
@@ -547,6 +571,16 @@
   We have just begun to make a viable production-quality tool to run on our
   clusters and display on our power walls.  There is much work to be done.
 
+  Our desktop delivery objects allow for any type of interface to be built
+  on the client side.  However, we currently have not built a GUI capable
+  of much more than simple navigation controls.  Ultimately, we would like
+  a fully-featured visualization tool such as ParaView \cite{Law01} to be
+  presented at the desktop.  We currently have a contract with Kitware
+  (\href{http://www.kitware.com}{www.kitware.com}) to incorporate the
+  technologies described in this paper into ParaView.  The latest version
+  of ParaView is available free from
+  \href{http://www.paraview.org}{www.paraview.org}.
+
   The two methods of rendering to tile walls discussed have diametrical
   performance properties.  Chromium's \cidentifier{tile\-sort} excels at
   providing fast frame rates for small amounts of geometry while ICE-T
@@ -558,12 +592,6 @@
   replication.  By replicating the geometric data we can reduce the amount
   of image data that needs to be processed and can thereby greatly increase
   the speed of image composition.
-
-  Our desktop delivery objects allow for any type of interface to be built
-  on the client side.  However, we currently have not built a GUI capable
-  of much more than simple navigation controls.  Ultimately, we would like
-  a fully-featured visualization tool such as ParaView \cite{Law01} to be
-  presented at the desktop.
 
   While the concept of a steering station allows an arbitrarily complex
   user interface, it can be less than ideal.  Often, we find the user
