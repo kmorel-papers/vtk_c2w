@@ -53,13 +53,13 @@
   To alleviate these problems, we have chosen to leverage VTK, the
   Visualization Toolkit \cite{Schroeder98}.  VTK is an open-source API
   containing a comprehensive suite of visualization tools.  More
-  importantly, VTK incorporates an extensible component-based architecture.
-  Our new approach to delivering visualization tools is to wrap these tools
-  into VTK components and store these components in a common component
-  library.  This should allow each tool to work together with current and
-  future tools under the same, consistent user interface.  All three DOE
-  national labs, Sandia, Las Alamos, and Lawrence Livermore, have agreed to
-  make VTK the R\&D platform for visualization.
+  importantly, VTK incorporates an extensible, component-based
+  architecture.  Our new approach to delivering visualization tools is to
+  wrap these tools into VTK components and store these components in a
+  common component library.  This should allow each tool to work together
+  with current and future tools under the same, consistent user interface.
+  All three DOE national labs, Sandia, Las Alamos, and Lawrence Livermore,
+  have agreed to make VTK the R\&D platform for visualization.
 
   Our visualization needs put a large strain on VTK.  ASCI routinely
   creates simulations on the order of 50 million cells \cite{Heermann99},
@@ -262,7 +262,7 @@
   \cidentifier{vtk\-Desktop\-Delivery\-Server} inherit from
   \cidentifier{vtk\-Parallel\-Render\-Manager}.  While this inheritance
   strains the ``is-a'' requirement dictated by good object oriented program
-  design, we felt the amount of code re-use we achieved was too important
+  design, we feel the amount of code re-use we achieved was too important
   to neglect.  Furthermore, by inheriting from
   \cidentifier{vtk\-Parallel\-Render\-Manager} we were able to take
   advantage of its boundary calculation and image reduction capabilities,
@@ -338,13 +338,13 @@
   Another power wall display solution available to us is ICE-T, the Image
   Composite Engine for Tiles.  The ICE-T API allows applications to easily
   perform sort-last parallel rendering.  It uses several image space
-  reduction and compression tricks to make even the composition of high
+  reduction and compression tricks to make the composition of even high
   resolution tiled displays feasible.  The details if ICE-T's algorithms
   can be found in \cite{Moreland01}.
 
   Our initial goal was to embed ICE-T into a Chromium SPU.  However, we
   quickly found that this is an impractical target.  The Chromium SPUs,
-  because the operate on streams of OpenGL commands, use a ``push'' model.
+  because they operate on streams of OpenGL commands, use a ``push'' model.
   That is, the application pushes OpenGL commands to the first SPU, which
   pushes them to the next SPU, and so on.  A SPU generally processes one
   command and then moves on.  In contrast, ICE-T uses a ``pull'' model.
@@ -424,10 +424,10 @@
   \section{Discussion}
   \label{sec:discussion}
 
-  With the introduction of the desktop delivery and ICE-T components into
-  VTK, we have shown that VTK is a viable framework for cluster-based
-  interactive applications that require remote display or display to
-  high-resolution power walls.  By using both the image-centric
+  With the introduction of the desktop delivery, Chromium, and ICE-T
+  components into VTK, we have shown that VTK is a viable framework for
+  cluster-based interactive applications that require remote display or
+  display to high-resolution power walls.  By using both the image-centric
   level-of-detail provided by the reduction factors in conjunction with the
   geometry-centric level-of-detail directly provided by VTK, we can achieve
   highly interactive rendering with almost any image transfer, compositing,
