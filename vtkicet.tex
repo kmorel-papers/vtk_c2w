@@ -53,7 +53,7 @@
   To alleviate these problems, we have chosen to leverage VTK, the
   Visualization Toolkit \cite{Schroeder98}.  VTK is an open-source API
   containing a comprehensive suite of visualization tools.  More
-  importantly, VTK incorporates an extendible component-based architecture.
+  importantly, VTK incorporates an extensible component-based architecture.
   Our new approach to delivering visualization tools is to wrap these tools
   into VTK components and store these components in a common component
   library.  This should allow each tool to work together with current and
@@ -131,7 +131,7 @@
   initial approaches to creating parallel rendering modules involved
   subclassing \cidentifier{vtk\-Composite\-Manager}.  Unfortunately,
   \cidentifier{vtk\-Composite\-Manager} expects its subclasses to only
-  handle image data that has already been read from framebuffers.
+  handle image data that has already been read from frame buffers.
   Attempting to work around this limitation resulted in obfuscated code.
 
   Our response was to create a new class,
@@ -163,23 +163,23 @@
   render occurs.
 
   Control is relinquished back to the render window, which proceeds to
-  perform the actual image synthesis.  Afterwards, each render window sends
+  perform the actual image synthesis.  Afterwords, each render window sends
   an end render event to its respective parallel render manager.  The
   \cidentifier{vtk\-Parallel\-Render\-Manager} calls yet another protected
   virtual function to allow subclasses to perform any post-processing, such
   as image composition.
 
-  In addition to handling render events and their propogation and
+  In addition to handling render events and their propagation and
   synchronization as described above,
   \cidentifier{vtk\-Parallel\-Render\-Manager} also has the following
   features.
   \begin{description}
     \item [Object Creation] Provides factory methods for creating renderer
-      and render window objects.  This allows a parllel rendering scheme to
+      and render window objects.  This allows a parallel rendering scheme to
       perform operations in the middle of rendering by subclassing some of
       the objects that perform the actual render.
-    \item [Boundries] Will compute the physical boundry, in three space, of
-      the composite object rendered by all processes.
+    \item [Boundaries] Will compute the physical boundary, in three space,
+      of the composite object rendered by all processes.
     \item [Image Reduction] Can reduce the size of the image being rendered
       and inflate the image for viewing.  Reducing the image size can
       drastically reduce the time required for image composition
@@ -194,7 +194,7 @@
   All of the parallel rendering classes described in this paper inherit
   from \cidentifier{vtk\-Parallel\-Render\-Manager}.  Doing this affords us
   a significant amount of code reuse.  It also provides an abstraction that
-  alows us to easily swap the parallel rendering method in our
+  allows us to easily swap the parallel rendering method in our
   applications.
 
   We have also implemented a class called
@@ -263,9 +263,9 @@
   \cidentifier{vtk\-Parallel\-Render\-Manager}.  While this inheritance
   strains the ``is-a'' requirement dictated by good object oriented program
   design, we felt the amount of code re-use we achieved was too important
-  to neglect.  Futhermore, by inheriting from
+  to neglect.  Furthermore, by inheriting from
   \cidentifier{vtk\-Parallel\-Render\-Manager} we were able to take
-  advantage of its boundry calculation and image reduction capabilities,
+  advantage of its boundary calculation and image reduction capabilities,
   both of which are vital properties of our desktop delivery.
 
   Because the desktop delivery server was designed to enable delivery from
@@ -374,7 +374,7 @@
   \cidentifier{vtk\-Ice\-T\-Render\-Manager} works in conjunction with the
   ICE-T API to compose images.
 
-  However, ICE-T also must perterb the projection matrix and perform
+  However, ICE-T also must perturb the projection matrix and perform
   several renderings.  This behavior is beyond that of a
   \cidentifier{vtk\-Parallel\-Render\-Manager} unit.  Instead, we also
   built an object called \cidentifier{vtk\-Ice\-T\-Renderer} to handle
@@ -435,7 +435,7 @@
   data, would probably be good here.  But how?  You really need a video and
   see it in action.}
 
-  \sticky{Comparison of rendering times of Chromium and ICE-T for varius
+  \sticky{Comparison of rendering times of Chromium and ICE-T for various
   geometry sizes.  I would have it here already, but after a month I still
   don't have the Chromium stuff working on our cluster.  It's driving my
   nucking futs.}
@@ -454,15 +454,17 @@
   We have just begun to make a viable production-quality tool to run on our
   clusters and display on our power walls.  There is much work to be done.
 
-  The use of ICE-T's image compositing to drive power walls has the
-  advantage of being resilient to changes in the input geometry size.
-  Unfortunately, it also incurs a high overhead in each frame regardless of
-  how little geometry is to be rendered.  In situations like this, we could
-  benefit greatly from a sort-first architecture like the one implemented
-  in the ``tilesort'' SPU of the Chromium system \cite{Humphreys02}.  It
-  would be interesting to directly compare the two approaches and find the
-  cutoff in geometry size, if any, where image compositing outweighs tile
-  sorting.
+  The two methods of rendering to tile walls discussed have diametrical
+  performance properties.  Chromium's \cidentifier{tile\-sort} excells at
+  providing fast frame rates for small amounts of geometry while ICE-T
+  excells at rendering large amounts of geometry.  We would like our
+  application to be able to pick the most appropriate rendering method.
+  Unfortunately, Chromium and ICE-T have to be launched in different ways.
+  An application cannot easily switch between the two.  Our proposed
+  solution is to instead modify ICE-T to take advantage of data
+  replication.  By replicating the geometric data we can reduce the amount
+  of image data that needs to be processed and can thereby greatly increase
+  the speed of image composition.
 
   Our desktop delivery objects allow for any type of interface to be built
   on the client side.  However, we currently have not built a GUI capable
