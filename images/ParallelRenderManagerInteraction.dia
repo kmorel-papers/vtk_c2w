@@ -434,7 +434,7 @@
         <dia:connection handle="0" to="O7" connection="1"/>
       </dia:connections>
     </dia:object>
-    <dia:object type="UML - Object" version="0" id="O14">
+    <dia:object type="UML - Objet" version="0" id="O14">
       <dia:attribute name="obj_pos">
         <dia:point val="336,278"/>
       </dia:attribute>
@@ -512,7 +512,7 @@ Window
         <dia:boolean val="false"/>
       </dia:attribute>
     </dia:object>
-    <dia:object type="UML - Object" version="0" id="O15">
+    <dia:object type="UML - Objet" version="0" id="O15">
       <dia:attribute name="obj_pos">
         <dia:point val="343,278"/>
       </dia:attribute>
@@ -591,7 +591,7 @@ Manager
         <dia:boolean val="false"/>
       </dia:attribute>
     </dia:object>
-    <dia:object type="UML - Object" version="0" id="O16">
+    <dia:object type="UML - Objet" version="0" id="O16">
       <dia:attribute name="obj_pos">
         <dia:point val="353,278"/>
       </dia:attribute>
@@ -702,7 +702,7 @@ Manager
         <dia:point val="333.021,283.019"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="331.511,280.669;334.531,286.224"/>
+        <dia:rectangle val="331.721,280.669;334.321,286.224"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="331.771,280.719"/>
@@ -716,7 +716,7 @@ Manager
       <dia:attribute name="text">
         <dia:composite type="text">
           <dia:attribute name="string">
-            <dia:string>#Actor#</dia:string>
+            <dia:string>#UI#</dia:string>
           </dia:attribute>
           <dia:attribute name="font">
             <dia:font name="Helvetica"/>
@@ -741,7 +741,7 @@ Manager
         <dia:point val="334.271,283.019"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="334.221,282.215;338.466,283.4"/>
+        <dia:rectangle val="334.221,282.214;338.466,283.4"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="334.271,283.019"/>
@@ -879,9 +879,6 @@ Manager
       <dia:attribute name="numcp">
         <dia:int val="1"/>
       </dia:attribute>
-      <dia:attribute name="line_width">
-        <dia:real val="0.1"/>
-      </dia:attribute>
       <dia:attribute name="end_arrow">
         <dia:enum val="6"/>
       </dia:attribute>
@@ -998,9 +995,6 @@ Information#</dia:string>
       <dia:attribute name="numcp">
         <dia:int val="1"/>
       </dia:attribute>
-      <dia:attribute name="line_width">
-        <dia:real val="0.1"/>
-      </dia:attribute>
       <dia:attribute name="end_arrow">
         <dia:enum val="6"/>
       </dia:attribute>
@@ -1020,7 +1014,7 @@ Information#</dia:string>
         <dia:point val="351.116,293"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="348.094,292.305;354.138,293.905"/>
+        <dia:rectangle val="348.044,292.305;354.138,293.905"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -1049,7 +1043,7 @@ Information#</dia:string>
         <dia:connection handle="0" to="O28" connection="0"/>
       </dia:connections>
     </dia:object>
-    <dia:object type="UML - Object" version="0" id="O30">
+    <dia:object type="UML - Objet" version="0" id="O30">
       <dia:attribute name="obj_pos">
         <dia:point val="360,278"/>
       </dia:attribute>
@@ -1299,9 +1293,6 @@ Window
       <dia:attribute name="numcp">
         <dia:int val="1"/>
       </dia:attribute>
-      <dia:attribute name="line_width">
-        <dia:real val="0.1"/>
-      </dia:attribute>
       <dia:attribute name="start_arrow">
         <dia:enum val="3"/>
       </dia:attribute>
@@ -1330,7 +1321,7 @@ Window
         <dia:point val="351.116,296"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="348.346,295.305;353.886,296.905"/>
+        <dia:rectangle val="348.296,295.305;353.886,296.905"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">
@@ -1477,9 +1468,6 @@ Processing#</dia:string>
       <dia:attribute name="numcp">
         <dia:int val="1"/>
       </dia:attribute>
-      <dia:attribute name="line_width">
-        <dia:real val="0.1"/>
-      </dia:attribute>
       <dia:attribute name="start_arrow">
         <dia:enum val="3"/>
       </dia:attribute>
@@ -1508,7 +1496,7 @@ Processing#</dia:string>
         <dia:point val="351.116,304"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="348.094,303.305;354.138,304.905"/>
+        <dia:rectangle val="348.044,303.305;354.138,304.905"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:composite type="text">

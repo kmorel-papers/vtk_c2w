@@ -646,7 +646,7 @@ Server#</dia:string>
         <dia:point val="333.021,283.019"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="331.461,280.669;334.531,286.224"/>
+        <dia:rectangle val="331.721,280.669;334.321,286.224"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="331.771,280.719"/>
@@ -660,7 +660,7 @@ Server#</dia:string>
       <dia:attribute name="text">
         <dia:composite type="text">
           <dia:attribute name="string">
-            <dia:string>#Actor#</dia:string>
+            <dia:string>#UI#</dia:string>
           </dia:attribute>
           <dia:attribute name="font">
             <dia:font name="Helvetica"/>
