@@ -452,6 +452,32 @@
   data, would probably be good here.  But how?  You really need a video and
   see it in action.}
 
+  \begin{figure}
+    \includegraphics[width=\linewidth,viewport=.75in .75in 10.25in 7.75in]
+		    {images/scaling}
+    \caption{Comparison of rendering times using ICE-T and Chromium.}
+    \label{fig:scaling}
+  \end{figure}
+
+  A comparison between Chromium's \cidentifier{tile\-sort} SPU and ICE-T
+  reveals very different rendering characteristics.  Figure
+  \vref{fig:scaling} shows the rendering performance of ICE-T for various
+  sizes of input geometry and the theoretical maxium performance of
+  Chromium.\footnote{Current bugs in Chromium are preventing us from
+  performing a fairly scaled comparison to ICE-T in figure
+  \ref{fig:scaling}.  The Chromium performance is based on the assumption
+  that the network is the only bottleneck and that each
+  \cidentifier{crserver} receives input at the maximum transfer rate.  We
+  expect the actual rendering rate to be slower than that shown in figure
+  \ref{fig:scaling}.}  The timings are taken from a job that runs on 32
+  processors and displays on 9 tiles, each having a resolution of $1280
+  \times 1024$ pixels.  When there are less than about 20 million triangles
+  all total, Chromium's \cidentifier{tile\-sort} renders faster than ICE-T.
+  However, with larger input sizes the overhead of doing sort-last image
+  compositing in ICE-T becomes insignificant.  At about 100 million
+  trianges, the rendering rate is mostly limited by the speed of the
+  graphics cards.
+
   \sticky{Comparison of rendering times of Chromium and ICE-T for various
   geometry sizes.  I would have it here already, but after a month I still
   don't have the Chromium stuff working on our cluster.  It's driving me
