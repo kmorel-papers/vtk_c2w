@@ -111,8 +111,7 @@
   performing sort-last parallel rendering onto tile displays
   \cite{Moreland01}.  The ICE-T methodology for rendering fits well with
   VTK's existing parallel rendering paradigm.  We therefore implemented a
-  new composite engine for VTK using the ICE-T API, to be discussed in
-  section \ref{sec:tiled_display}.
+  new parallel rendering engine for VTK using the ICE-T API.
 
 
   \section{Parallel Rendering Interface}
@@ -318,57 +317,84 @@
   features of these objects may grow to strengthen the coupling between VTK
   applications and Chromium.
 
-  Chromium scaling issues.
+  Using Chromium and its \cidentifier{tile\-sort} SPU, one can achieve very
+  impressive frame rates on large power wall displays.  However, this
+  approach has scaling issues.  Generally, the number of rendering nodes is
+  fixed to the number of tiles being displayed.  Adding more rendering
+  nodes requires splitting the tiles into smaller pieces.  This approach
+  means the smaller pieces must be recombined to form a full image for each
+  tile.  It has to be done either with additional image combining hardware
+  \cite{Stoll01}, which we don't have, or with software by reading back the
+  frame buffer, largely at the expense of frame rates.  Furthermore, the
+  sort-first approach to parallel rendering performed by
+  \cidentifier{tile\-sort} has inherent scalability and load balancing
+  issues.  Some work has been done to correct these issues
+  \cite{Samanta99}, but has not yet been implemented in Chromium.
 
 
   \section{ICE-T}
   \label{sec:ICE-T}
 
   Another power wall display solution available to us is ICE-T, the Image
-  Composite Engine for Tiles.  The ICE-T API is an implementation of the
-  work presented by Moreland, Wylie, and Pavlakos for efficiently
-  performing sort-last parallel rendering onto tile displays
-  \cite{Moreland01}.
+  Composite Engine for Tiles.  The ICE-T API allows applications to easily
+  perform sort-last parallel rendering.  It uses several image space
+  reduction and compression tricks to make even the composition of high
+  resolution tiled displays feasible.  The details if ICE-T's algorithms
+  can be found in \cite{Moreland01}.
+
+  Our initial goal was to embed ICE-T into a Chromium SPU.  However, we
+  quickly found that this is an impractical target.  The Chromium SPUs,
+  because the operate on streams of OpenGL commands, use a ``push'' model.
+  That is, the application pushes OpenGL commands to the first SPU, which
+  pushes them to the next SPU, and so on.  A SPU generally processes one
+  command and then moves on.  In contrast, ICE-T uses a ``pull'' model.
+  ICE-T can perform compositions for images that can be much larger then
+  what the available graphics card can render in one shot.  It therefore
+  may have to pull several images of the same geometry rendered with
+  different projections.  For this to be performed in a Chromium SPU, the
+  entire OpenGL stream would have to be cached each frame.  This would be
+  very inefficient for large amounts of geometry, which ICE-T was
+  specifically designed to handle.  We briefly considered Chromium hints
+  and extensions that might make the application's data available.
+  Ultimately we decided that trying to shoehorn ICE-T into Chromium like
+  this would require applications to be so tailored to the ICE-T SPU that
+  they might as well use the ICE-T API directly.
+
+  We were able to instead embed ICE-T into the VTK framework.  We found
+  this much more practical because, like ICE-T, VTK uses a pull model.  A
+  render request is given to the window at the bottom of the VTK pipeline.
+  The event is propagated up the pipeline as each component pulls fresh
+  geometry or images from the component above it.  ICE-T fits well in this
+  framework.
+
+  To start, we built an object called
+  \cidentifier{vtk\-Ice\-T\-Render\-Manager}.  As always, this class
+  inherits from \cidentifier{vtk\-Parallel\-Render\-Manager}.  As such, it
+  attaches itself to a render window and listens for render events.
+  \cidentifier{vtk\-Ice\-T\-Render\-Manager} works in conjunction with the
+  ICE-T API to compose images.
+
+  However, ICE-T also must perterb the projection matrix and perform
+  several renderings.  This behavior is beyond that of a
+  \cidentifier{vtk\-Parallel\-Render\-Manager} unit.  Instead, we also
+  built an object called \cidentifier{vtk\-Ice\-T\-Renderer} to handle
+  this.  \cidentifier{vtk\-Ice\-T\-Renderer} responds to ICE-T render
+  requests and returns the appropriate images.  The ICE-T render manager
+  object will create ICE-T renderer objects for the user.
+
+  The ICE-T render manager also builds on the concept of image reduction.
+  Unlike the image reduction of the parent
+  \cidentifier{vtk\-Parallel\-Render\-Manager} class, the ICE-T render
+  manager does not reduce the size of the renderable viewport.  Recall that
+  in a tiled display, the overall display size is larger than any one
+  image.  ICE-T uses an extension of the ``floating viewport'' described in
+  Moreland, Wylie, and Pavlakos \cite{Moreland01} to render images spanning
+  multiple tiles and therefore reduce the number of times the geometry must
+  be rendered.
 
 
-  \section{Tiled Display}
-  \label{sec:tiled_display}
-
-%%   \begin{figure*}
-%%     \begin{center}
-%%       \includegraphics[scale=0.23]{images/IceTCompositeClasses}
-%%     \end{center}
-%%     \caption{Tiled display compositing classes.}
-%%     \label{fig:tiled_display_classes}
-%%   \end{figure*}
-
-  We also greatly desire to drive power walls in our parallel VTK
-  applications.  We did this by wrapping our ICE-T API in VTK objects.
-  First, we subclassed vtkCompositeManager to allow ICE-T to be a drop-in
-  replacement for any VTK compositor.  Unfortunately, the ICE-T API
-  exhibits behavior that goes above and beyond what the VTK composite
-  manager does.  In particular, because ICE-T generates images larger than
-  the renderable window of any given display, it must be able to render the
-  same geometry multiple times.  It must also be able to change the
-  projection matrix before each rendering.  This functionality was most
-  easily introduced by subclassing vtkOpenGLRenderer.  Under ``normal''
-  circumstances, the ICE-T renderer behaves just like any other VTK
-  renderer.  When used in conjunction with the ICE-T composite manager, the
-  ICE-T renderer invokes the ICE-T API to manipulate projection matrices,
-  render multiple viewing frustums, and compose multiple images in
-  parallel.  The ICE-T composite manager does nothing but emit errors if
-  not used with an ICE-T renderer.  A diagram of how these objects
-%%   collaborate is shown in figure \vref{fig:tiled_display_classes}.
-
-  Like the desktop delivery and other forms of the vtkCompositeManager
-  classes, the ICE-T composite manager also supports the idea of a
-  reduction factor.  Unlike the other reduction factor implementations, the
-  ICE-T composite manager does not reduce the size of the renderable
-  window.  Recall that in a tiled display, the overall display size is
-  larger than any one image.  ICE-T uses an extension of the ``floating
-  viewport'' described in Moreland, Wylie, and Pavlakos \cite{Moreland01}
-  to render images spanning multiple tiles and therefore reduce the number
-  of times the geometry must be rendered.
+  \section{Steering Station}
+  \label{sec:steering_station}
 
   Another important issue with rendering to tiled displays is providing an
   interface with which users can interact.  The typical solution for VTK
@@ -406,9 +432,13 @@
   geometry-centric level-of-detail directly provided by VTK, we can achieve
   highly interactive rendering with almost any image transfer, compositing,
   or rendering speeds.  \sticky{Some empirical evidence, i.e. with LLNL
-  data, would probably be good here.  But that would suggest adding more
-  figures, increasing the size of the paper, and making review and release
-  harder.  Doing this probably depends on the forum.}
+  data, would probably be good here.  But how?  You really need a video and
+  see it in action.}
+
+  \sticky{Comparison of rendering times of Chromium and ICE-T for varius
+  geometry sizes.  I would have it here already, but after a month I still
+  don't have the Chromium stuff working on our cluster.  It's driving my
+  nucking futs.}
 
   One drawback of the ICE-T composite objects is that they only work with
   OpenGL rendering and MPI communications.  This is because, due to
@@ -440,12 +470,11 @@
   a fully featured visualization tool such as ParaView \cite{Law01} to be
   presented at the desktop.
 
-  While the concept of a steering station (introduced in section
-  \ref{sec:tiled_display}) allows an arbitrarily complex user interface, it
-  can be less than ideal.  Often, we find the user jumping between the
-  steering station and the wall.  We would like to incorporate a hand-held
-  device that could move with the user and at least provide navigation
-  controls.
+  While the concept of a steering station allows an arbitrarily complex
+  user interface, it can be less than ideal.  Often, we find the user
+  jumping between the steering station and the wall.  We would like to
+  incorporate a hand-held device that could move with the user and at least
+  provide navigation controls.
 
 
   \section{Acknowledgments}
