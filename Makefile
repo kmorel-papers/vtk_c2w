@@ -39,5 +39,5 @@ $(TARGET).pdf: $(TARGET).tex $(TARGET).bib
 
 clean:
 	rm -f $(TARGET).aux $(TARGET).log $(TARGET).bbl $(TARGET).blg
-	rm -f $(TARGET).out $(TARGET).dvi $(TARGET).pdf
+	rm -f $(TARGET).out $(TARGET).dvi $(TARGET).pdf $(TARGET).ps
 	rm -f *~
