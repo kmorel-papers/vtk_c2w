@@ -52,21 +52,22 @@ set xlabel "Number of Processors"
 set ylabel "Rendering Speed (Millions of triangles per second)"
 set xtics 16
 set xrange [16:128]
-set rmargin 9
-set label 1 " 1 Tile" at 128, 446 left
-set label 16 " 16 Tiles" at 128, 372 left
-set label 48 " 48 Tiles" at 128, 160 left
-set label 99 " VTK" at 128, 320 left
-set nokey
+# set rmargin 9
+# set label 1 " 1 Tile" at 128, 446 left
+# set label 16 " 16 Tiles" at 128, 372 left
+# set label 48 " 48 Tiles" at 128, 160 left
+# set label 99 " VTK" at 128, 320 left
+# set nokey
+set key left top Left reverse
 plot	'scaling_icet_strong.dat' index 0				\
 		using 4:($3/1000000) '%lf,%lf,%lf,%lf'			\
-		title "1x1 Tiles",					\
+		title "ICE-T, 1x1 Tiles",				\
 	'scaling_icet_strong.dat' index 1				\
 		using 4:($3/1000000) '%lf,%lf,%lf,%lf'			\
-		title "4x4 Tiles",					\
+		title "ICE-T, 4x4 Tiles",				\
 	'scaling_icet_strong.dat' index 2				\
 		using 4:($3/1000000) '%lf,%lf,%lf,%lf'			\
-		title "12x4 Tiles",					\
+		title "ICE-T, 12x4 Tiles",				\
 	'scaling_icet_strong.dat' index 3				\
 		using 4:($3/1000000) '%lf,%lf,%lf,%lf'			\
 		title "VTK Composite"
@@ -76,45 +77,47 @@ plot	'scaling_icet_strong.dat' index 0				\
 # -----------------------------------------------------------------------------
 
 set output "scaling_icet_weak.eps"
-set title 'Sort-Last Weak Scaling'
+set title 'Sort-Last Scaling'
 set xlabel "Number of Processors"
 set ylabel "Rendering Speed (Millions of triangles per second)"
 set xtics 16
-set xrange [16:128]
-set rmargin 9
-set label 1 " 1 Tile" at 128, 579 left
-set label 16 " 16 Tiles" at 128, 488 left
-set label 48 " 48 Tiles" at 128, 164 left
-set label 99 " VTK" at 128, 353 left
-set nokey
+set xrange [1:128]
+# set rmargin 9
+# set label 1 " 1 Tile" at 128, 579 left
+# set label 16 " 16 Tiles" at 128, 488 left
+# set label 48 " 48 Tiles" at 128, 164 left
+# set label 99 " VTK" at 128, 353 left
+# set nokey
+set key left top Left reverse
 plot	'scaling_icet_weak.dat' index 0					\
 		using 4:($3/1000000) '%lf,%lf,%lf,%lf'			\
-		title "1x1 Tiles",					\
+		title "ICE-T, 1x1 Tiles",				\
 	'scaling_icet_weak.dat' index 1					\
 		using 4:($3/1000000) '%lf,%lf,%lf,%lf'			\
-		title "4x4 Tiles",					\
+		title "ICE-T, 4x4 Tiles",				\
 	'scaling_icet_weak.dat' index 2					\
 		using 4:($3/1000000) '%lf,%lf,%lf,%lf'			\
-		title "12x4 Tiles",					\
+		title "ICE-T, 12x4 Tiles",				\
 	'scaling_icet_weak.dat' index 3					\
 		using 4:($3/1000000) '%lf,%lf,%lf,%lf'			\
-		title "VTK Composite"
+		title "VTK Composite (1 Tile)"
 
 # pause -1 "Press <enter> to continue."
 
 # -----------------------------------------------------------------------------
 
 set output "scaling_chromium.eps"
-set title 'Sort-First Weak Scaling'
+set title 'Sort-First Scaling'
 set xlabel "Number of Application Processors"
 set ylabel "Rendering Speed (Millions of triangles per second)"
 set xtics autofreq
 set autoscale x
-set rmargin 9
-set label 4 " 4 Tiles" at 8, .29 left
-set label 16 " 16 Tiles" at 8, .24 left
-set label 48 " 48 Tiles" at 8, .22 left
-set nokey
+# set rmargin 9
+# set label 4 " 4 Tiles" at 8, .29 left
+# set label 16 " 16 Tiles" at 8, .24 left
+# set label 48 " 48 Tiles" at 8, .22 left
+# set nokey
+set key right bottom Left reverse
 plot	'scaling_chromium.dat' index 0					\
 		using 4:($3/1000000) '%lf,%lf,%lf,%lf'			\
 		title "2x2 Tiles",					\

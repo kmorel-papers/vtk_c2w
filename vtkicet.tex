@@ -84,10 +84,10 @@
   to use, if they are aware of the tools' existence at all.  Often this
   results in tools being unused.
 
-  To alleviate these problems, we have chosen to leverage \keyterm{the
-  Visualization Toolkit} (VTK) \cite{Schroeder98}.  VTK is an open-source
-  API containing a comprehensive suite of visualization tools.  More
-  importantly, VTK incorporates an extensible, component-based
+  To alleviate these problems, we have chosen to leverage the
+  \keyterm{Visualization Toolkit} (VTK) \cite{Schroeder02}.  VTK is an
+  open-source API containing a comprehensive suite of visualization tools.
+  More importantly, VTK incorporates an extensible, component-based
   architecture.  Our new approach to delivering visualization tools is to
   wrap these tools into VTK components and store these components in a
   common component library.  This should allow each tool to work together
@@ -430,7 +430,7 @@
   \section{ICE-T}
   \label{sec:ICE-T}
 
-  Another power wall display solution available to us is \keyterm{the Image
+  Another power wall display solution available to us is the \keyterm{Image
   Composite Engine for Tiles} (ICE-T).  The ICE-T API allows applications
   to easily perform sort-last parallel rendering.  It uses several image
   space reduction and compression techniques to make the composition of
@@ -444,7 +444,7 @@
   which pushes them to the next SPU, and so on.  A SPU generally processes
   one command and then moves on.  In contrast, ICE-T uses a \emph{pull}
   model.  ICE-T can perform compositions for images that can be much larger
-  then what the available graphics card can render in one shot.  It
+  then what the available graphics card can render in one pass.  It
   therefore may have to pull several images of the same geometry rendered
   with different projections.  For this to be performed in a Chromium SPU,
   the entire OpenGL stream would have to be cached each frame.  This would
@@ -518,23 +518,25 @@
 
   \begin{figure}
     \includegraphics[width=\linewidth]{images/scaling_icet_weak}
-    \caption{Weak scaling of sort last parallel rendering.  ICE-T is used
-      to render to various tile layouts.  The performance of the compositer
+    \caption{Scaling of sort last parallel rendering.  ICE-T is used to
+      render to various tile layouts.  The performance of the compositer
       distributed with VTK is also measured.  Each application processor
-      renders about 7.4 million triangles.}
+      renders about 7.4 million triangles (i.e. larger jobs have more
+      triangles).}
     \label{fig:ice-t}
   \end{figure}
 
   \begin{figure}
     \includegraphics[width=\linewidth]{images/scaling_chromium}
-    \caption{Weak scaling of parallel rendering using Chromium's
+    \caption{Scaling of parallel rendering using Chromium's
       \cidentifier{tile\-sort} SPU.  Each client renders about 7.4 million
-      triangles.  Measurements were taken using a 100BaseT network.}
+      triangles (i.e. larger jobs have more triangles).  Measurements were
+      taken using a 100BaseT network.}
     \label{fig:chromium}
   \end{figure}
 
-  \section{Discussion}
-  \label{sec:discussion}
+  \section{Conclusion}
+  \label{sec:conclusion}
 
   With the introduction of the desktop delivery, Chromium, and ICE-T
   components into VTK, we have shown that VTK is a viable framework for
@@ -594,18 +596,21 @@
   about 10~Hz for our tile displays due to the overhead of image
   compositing.  However, as can be seen in Figure \ref{fig:ice-t}, with
   sufficiently large input geometry we can achieve very impressive
-  rendering performance even on tiled displays.  In contrast, the Chromium
-  \cidentifier{tile\-sort} SPU has been shown to be able to render with
-  frame rates in excess of 40~Hz \cite{Humphreys02}.  However, our current
-  method of rendering has the number of Chromium ``server'' nodes fixed to
-  the number of tiles and we see from Figure \ref{fig:chromium} that we get
-  negative returns attempting to use more than about four application
-  processes.  Thus, we can only use our current Chromium configuration with
-  modest sized data.  It is conceivable to build other Chromium
-  configurations that allow for better rendering performance of large data
-  on tile displays, but race conditions existing in the Chromium network
-  layer at the time of this writing have prohibited us from experimenting
-  in this arena.
+  rendering performance even on tiled displays.
+
+  In contrast, the Chromium \cidentifier{tile\-sort} SPU has been shown to
+  be able to render with frame rates in excess of 40~Hz \cite{Humphreys02}.
+  However, our current method of rendering has the number of Chromium
+  ``server'' nodes fixed to the number of tiles and we see from Figure
+  \ref{fig:chromium} that we get negative returns attempting to use more
+  than about four application processes.  Thus, we can only use our current
+  Chromium configuration with modest sized data.  It is conceivable to
+  build other Chromium configurations that allow for better rendering
+  performance of large data on tile displays, but race conditions existing
+  in the Chromium network layer at the time of this writing have prohibited
+  us from experimenting in this arena.  These race conditions have also
+  prohibited us from showing the scaling behavior past eight application
+  processors in Figure \ref{fig:chromium}.
 
 %%   One drawback of the ICE-T composite objects is that they only work with
 %%   OpenGL rendering and MPI communications.  This is because, due to
@@ -618,8 +623,9 @@
   \section{Future Work}
   \label{sec:future_work}
 
-  We have just begun to make a viable production-quality tool to run on our
-  clusters and display on our power walls.  There is much work to be done.
+  We have just begun the process of creating a viable production-quality
+  tool to run on our clusters and display on our power walls.  There is
+  much work still to be done.
 
   Our desktop delivery objects allow for any type of interface to be built
   on the client side.  However, we currently have not built a GUI capable
