@@ -1,20 +1,42 @@
 % -*- latex -*-
 
-\documentclass[twocolumn]{article}
+\documentclass{acmsiggraph}
 
 \usepackage[usenames]{color}
 \definecolor{Red}{rgb}{1,0,0}
 %\newcommand{\sticky}[1]{\textcolor{Red}{[#1]}}
 \newcommand{\sticky}[1]{}
 
+% This package apparently is for using Type 1 typefaces.
+\usepackage{mathptmx}
+
 \usepackage{graphicx}
 \usepackage{varioref}
 \usepackage{hyperref}
 
+%% If you are submitting a paper to the annual conference, please replace 
+%% the value ``0'' below with your OnlineID. If you are not submitting this
+%% paper to the annual conference, you may safely leave it at ``0;'' it 
+%% will not be included in the output.
+% Since I am submitting this to PVG, not SIGGRAPH, I assume 0 is ok.
+\onlineid{0}
+
+% I don't know what these do; they are not documented, but I just copied
+% them out of an example.
+\acmcategory{Research}
+\acmformat{print}
+
 \newcommand{\cidentifier}[1]{\texttt{#1}}
 
 \title{From Cluster to Wall with VTK}
-\author{Kenneth~Moreland and David~Thompson}
+
+\author{Kenneth~Moreland\thanks{e-mail: kmorel@sandia.gov}\\ Sandia
+  National Laboratories \and
+  David~Thompson\thanks{e-mail:dcthomp@sandia.gov}\\ Sandia National
+  Laboratories}
+
+\keywords{parallel rendering, desktop delivery, tile display, PC cluster,
+  Chromium, VTK}
 
 \begin{document}
 
@@ -32,6 +54,14 @@
     VTK application displaying the same geometry on a desktop connected to
     the cluster via a TCP/IP socket over 100BASE-T Ethernet.
   \end{abstract}
+
+  \begin{CRcatlist}
+    \CRcat{I.3.8}{Computing Methodologies}{Computer Graphics}{Applications}
+  \end{CRcatlist}
+
+  \keywordlist
+
+  \copyrightspace
 
   \section{Introduction}
   \label{sec:introduction}
@@ -89,7 +119,7 @@
   one image in the end.  This method allows us to make effective use of the
   parallel and distributed nature of our clusters, but can break down if
   the model pieces are too big to be processed by the available
-  resources\footnote{Ahrens et. al. \cite{Ahrens01} describe using VTK in a
+  resources\footnote{Ahrens et al. \cite{Ahrens01} describe using VTK in a
   streaming mode to perform out-of-core processing of data.}.
 
   While parallel visualization and rendering are now supported by VTK,
@@ -550,7 +580,7 @@
   DE-AC04-94AL85000.
 
 
-  \bibliographystyle{plain}
+  \bibliographystyle{acmsiggraph}
   \bibliography{vtkicet}
 
   \begin{figure*}[!p]
