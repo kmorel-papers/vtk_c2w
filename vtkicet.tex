@@ -172,14 +172,14 @@
   class designed to give subclasses as much or as little control as they
   need.
 
-  \begin{figure}
+  \begin{figure*}
     \begin{center}
-      \includegraphics[width=\linewidth]
+      \includegraphics[width=4in]
 		      {images/ParallelRenderManagerInteraction}
     \end{center}
     \caption{Interactions of the parallel render manager during render.}
     \label{fig:parallel_render_manager_interaction}
-  \end{figure}
+  \end{figure*}
   Figure \ref{fig:parallel_render_manager_interaction} outlines how the
   \cidentifier{vtk\-Parallel\-Render\-Manager} behaves during a render
   event.  After the ``master'' or ``root'' parallel render manager receives
@@ -266,13 +266,13 @@
   opposite processes.  The controller is typically implemented with a
   socket, but does not have to be.
 
-  \begin{figure}[ht]
+  \begin{figure*}[ht]
     \begin{center}
-      \includegraphics[width=\linewidth]{images/DesktopDeliveryInteraction}
+      \includegraphics[width=4in]{images/DesktopDeliveryInteraction}
       \caption{Interactions during rendering with desktop delivery.}
       \label{fig:desktop_delivery_interaction}
     \end{center}
-  \end{figure}
+  \end{figure*}
 
   The \cidentifier{vtk\-Desktop\-Delivery\-Client} object attaches itself
   as an observer to a render window.  When a render event occurs, the

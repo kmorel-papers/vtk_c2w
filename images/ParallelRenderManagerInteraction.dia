@@ -950,7 +950,7 @@ Manager#</dia:string>
         <dia:point val="338.262,310.2"/>
       </dia:attribute>
       <dia:attribute name="rtop">
-        <dia:real val="1.6"/>
+        <dia:real val="1.4"/>
       </dia:attribute>
       <dia:attribute name="rbot">
         <dia:real val="26.6"/>
@@ -967,13 +967,13 @@ Manager#</dia:string>
     </dia:object>
     <dia:object type="UML - Actor" version="0" id="O27">
       <dia:attribute name="obj_pos">
-        <dia:point val="333.021,283.019"/>
+        <dia:point val="333,283"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="331.721,280.669;334.321,286.224"/>
+        <dia:rectangle val="331.7,280.65;334.3,286.205"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="331.771,280.719"/>
+        <dia:point val="331.75,280.7"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="2.5"/>
@@ -993,7 +993,7 @@ Manager#</dia:string>
             <dia:real val="0.8"/>
           </dia:attribute>
           <dia:attribute name="pos">
-            <dia:point val="333.021,286.119"/>
+            <dia:point val="333,286.1"/>
           </dia:attribute>
           <dia:attribute name="color">
             <dia:color val="#000000"/>
@@ -1006,20 +1006,20 @@ Manager#</dia:string>
     </dia:object>
     <dia:object type="UML - Message" version="0" id="O28">
       <dia:attribute name="obj_pos">
-        <dia:point val="334.271,283.019"/>
+        <dia:point val="334.25,283"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="333.999,282.314;337.962,283.6"/>
+        <dia:rectangle val="333.988,282.205;337.962,283.4"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
-        <dia:point val="334.271,283.019"/>
-        <dia:point val="337.912,283.2"/>
+        <dia:point val="334.25,283"/>
+        <dia:point val="337.912,283"/>
       </dia:attribute>
       <dia:attribute name="text">
         <dia:string>#Render#</dia:string>
       </dia:attribute>
       <dia:attribute name="text_pos">
-        <dia:point val="335.761,283.009"/>
+        <dia:point val="335.75,282.899"/>
       </dia:attribute>
       <dia:attribute name="type">
         <dia:int val="0"/>
@@ -1113,7 +1113,7 @@ Manager#</dia:string>
         <dia:point val="346.116,285.2"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="346.066,284.463;355.466,285.6"/>
+        <dia:rectangle val="346.066,284.305;355.466,285.6"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="346.116,285.2"/>
@@ -1123,7 +1123,7 @@ Manager#</dia:string>
         <dia:string>#Start Render RMI#</dia:string>
       </dia:attribute>
       <dia:attribute name="text_pos">
-        <dia:point val="350.852,285.158"/>
+        <dia:point val="351,285"/>
       </dia:attribute>
       <dia:attribute name="type">
         <dia:int val="0"/>
@@ -1613,7 +1613,7 @@ Processing#</dia:string>
         <dia:point val="361.912,302.2"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="356.066,301.463;361.962,302.6"/>
+        <dia:rectangle val="356.066,301.305;361.962,302.6"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="361.912,302.2"/>
@@ -1623,7 +1623,7 @@ Processing#</dia:string>
         <dia:string>#End Render#</dia:string>
       </dia:attribute>
       <dia:attribute name="text_pos">
-        <dia:point val="359.071,302.158"/>
+        <dia:point val="359,302"/>
       </dia:attribute>
       <dia:attribute name="type">
         <dia:int val="0"/>
@@ -1784,20 +1784,20 @@ Processing#</dia:string>
     </dia:object>
     <dia:object type="UML - Lifeline" version="0" id="O54">
       <dia:attribute name="obj_pos">
-        <dia:point val="338.612,283.2"/>
+        <dia:point val="338.612,283"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="338.262,283.175;338.962,308.225"/>
+        <dia:rectangle val="338.262,282.975;338.962,308.025"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
-        <dia:point val="338.612,283.2"/>
-        <dia:point val="338.612,308.2"/>
+        <dia:point val="338.612,283"/>
+        <dia:point val="338.612,308"/>
       </dia:attribute>
       <dia:attribute name="rtop">
-        <dia:real val="22.8"/>
+        <dia:real val="23"/>
       </dia:attribute>
       <dia:attribute name="rbot">
-        <dia:real val="23.8"/>
+        <dia:real val="24"/>
       </dia:attribute>
       <dia:attribute name="draw_focus">
         <dia:boolean val="true"/>
@@ -1815,7 +1815,7 @@ Processing#</dia:string>
         <dia:point val="345.416,306"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="338.912,305.204;345.466,306.4"/>
+        <dia:rectangle val="338.912,305.083;345.466,306.4"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="345.416,306"/>
@@ -1825,7 +1825,7 @@ Processing#</dia:string>
         <dia:string>#Image#</dia:string>
       </dia:attribute>
       <dia:attribute name="text_pos">
-        <dia:point val="342.188,305.899"/>
+        <dia:point val="342.198,305.777"/>
       </dia:attribute>
       <dia:attribute name="type">
         <dia:int val="5"/>
@@ -1868,7 +1868,7 @@ Processing#</dia:string>
         <dia:point val="356.116,306"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="356.066,305.204;362.312,306.4"/>
+        <dia:rectangle val="356.066,305.083;362.312,306.4"/>
       </dia:attribute>
       <dia:attribute name="conn_endpoints">
         <dia:point val="356.116,306"/>
@@ -1878,7 +1878,7 @@ Processing#</dia:string>
         <dia:string>#Image#</dia:string>
       </dia:attribute>
       <dia:attribute name="text_pos">
-        <dia:point val="359.13,305.899"/>
+        <dia:point val="359.098,305.777"/>
       </dia:attribute>
       <dia:attribute name="type">
         <dia:int val="5"/>
