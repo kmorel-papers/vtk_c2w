@@ -5,69 +5,64 @@ TARGET = vtkicet
 LATEX_FLAGS	= -interaction=nonstopmode
 BIBTEX_FLAGS	=
 
+LATEX = latex
+BIBTEX	= bibtex
+
 .SUFFIXES:
-.SUFFIXES: .tex .dvi .pdf .ps
+.SUFFIXES: .tex .dvi .ps .pdf
 
-.tex.dvi:
-	rm -f $*.aux
-	@echo "[[ Finding Bibliography citings. ]]"
-	-latex $(LATEX_FLAGS) $<
-	@echo "[[[ Building Bibliography Database. ]]]"
-	bibtex $(BIBTEX_FLAGS) $*
-	@echo "[[ Building Numbering. ]]"
-	-latex $(LATEX_FLAGS) $<
-	@echo "[[[ Final LATEX Run ]]]"
-	latex $(LATEX_FLAGS) $<
-
-.tex.pdf:
-	rm -f $*.aux
-	@echo "[[ Finding Bibliography citings. ]]"
-	-pdflatex $(LATEX_FLAGS) $<
-	@echo "[[[ Building Bibliography Database. ]]]"
-	bibtex $(BIBTEX_FLAGS) $*
-	@echo "[[ Building Numbering. ]]"
-	-pdflatex $(LATEX_FLAGS) $<
-	@echo "[[[ Final LATEX Run ]]]"
-	pdflatex $(LATEX_FLAGS) $<
-
-quick: .final
-
-it: $(TARGET).dvi
-
-pdf: $(TARGET).pdf
+it: .final
 
 $(TARGET).aux:
+	(cd images ; ${MAKE} ps)
 	@echo "[[ Finding Bibliography citings. ]]"
-	pdflatex $(LATEX_FLAGS) $(TARGET).tex
+	$(LATEX) $(LATEX_FLAGS) $(TARGET).tex
 
 .bibcite:
+	(cd images ; ${MAKE} ps)
 	@echo "[[ Finding Bibliography citings. ]]"
-	pdflatex $(LATEX_FLAGS) $(TARGET).tex
+	$(LATEX) $(LATEX_FLAGS) $(TARGET).tex
 	touch .bibcite
 
 $(TARGET).bbl: $(TARGET).bib $(TARGET).aux
 	@echo "[[[ Building Bibliography Database. ]]]"
-	bibtex $(BIBTEX_FLAGS) $(TARGET)
+	$(BIBTEX) $(BIBTEX_FLAGS) $(TARGET)
 
 .bibentries: .bibcite
 	@echo "[[[ Building Bibliography Database. ]]]"
-	bibtex $(BIBTEX_FLAGS) $(TARGET)
+	$(BIBTEX) $(BIBTEX_FLAGS) $(TARGET)
 	touch .bibentries
 
 .numbering: .bibentries
 	@echo "[[ Building Numbering ]]"
-	pdflatex $(LATEX_FLAGS) $(TARGET).tex
+	$(LATEX) $(LATEX_FLAGS) $(TARGET).tex
 	touch .numbering
 
 .final: .numbering $(TARGET).bbl $(TARGET).tex
 	@echo "[[[ Final LaTex Run ]]]"
-	pdflatex $(LATEX_FLAGS) $(TARGET).tex
+	$(LATEX) $(LATEX_FLAGS) $(TARGET).tex
 	touch .final
 
-$(TARGET).dvi: $(TARGET).tex $(TARGET).bib
-$(TARGET).pdf: $(TARGET).tex $(TARGET).bib
+ps: $(TARGET).ps
+
+$(TARGET).ps: .final
+	@echo "[[[ Converting dvi to ps ]]]"
+	dvips -Ppdf -G0 -o $(TARGET).ps $(TARGET).dvi
+
+pdf: $(TARGET).pdf
+
+.ps.pdf:
+	@echo "[[[ Converting ps to pdf ]]]"
+	ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.3 \
+         -dSubsetFonts=true -dEmbedAllFonts=true \
+         -dAutoFilterColorImages=true \
+         -dAutoFilterGrayImages=false \
+         -dColorImageFilter=/FlateEncode \
+         -dGrayImageFilter=/FlateEncode \
+         -dMonoImageFilter=/FlateEncode  $< $@
 
 clean:
+	(cd images ; ${MAKE} clean)
 	rm -f $(TARGET).aux $(TARGET).log $(TARGET).bbl $(TARGET).blg
 	rm -f $(TARGET).out $(TARGET).dvi $(TARGET).pdf $(TARGET).ps
 	rm -f .bibcite .bibentries .numbering .final
