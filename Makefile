@@ -47,7 +47,7 @@ ps: $(TARGET).ps
 
 $(TARGET).ps: .final
 	@echo "[[[ Converting dvi to ps ]]]"
-	dvips -Ppdf -G0 -o $(TARGET).ps $(TARGET).dvi
+	dvips -Ppdf -G0 -t letter -o $(TARGET).ps $(TARGET).dvi
 
 pdf: $(TARGET).pdf
 
