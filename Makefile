@@ -2,7 +2,7 @@
 
 TARGET = vtkicet
 
-LATEX_FLAGS	=
+LATEX_FLAGS	= -interaction=nonstopmode
 BIBTEX_FLAGS	=
 
 .SUFFIXES:
@@ -11,22 +11,22 @@ BIBTEX_FLAGS	=
 .tex.dvi:
 	rm -f $*.aux
 	@echo "[[ Finding Bibliography citings. ]]"
-	latex $(LATEX_FLAGS) $<
+	-latex $(LATEX_FLAGS) $<
 	@echo "[[[ Building Bibliography Database. ]]]"
 	bibtex $(BIBTEX_FLAGS) $*
 	@echo "[[ Building Numbering. ]]"
-	latex $(LATEX_FLAGS) $<
+	-latex $(LATEX_FLAGS) $<
 	@echo "[[[ Final LATEX Run ]]]"
 	latex $(LATEX_FLAGS) $<
 
 .tex.pdf:
 	rm -f $*.aux
 	@echo "[[ Finding Bibliography citings. ]]"
-	pdflatex $(LATEX_FLAGS) $<
+	-pdflatex $(LATEX_FLAGS) $<
 	@echo "[[[ Building Bibliography Database. ]]]"
 	bibtex $(BIBTEX_FLAGS) $*
 	@echo "[[ Building Numbering. ]]"
-	pdflatex $(LATEX_FLAGS) $<
+	-pdflatex $(LATEX_FLAGS) $<
 	@echo "[[[ Final LATEX Run ]]]"
 	pdflatex $(LATEX_FLAGS) $<
 

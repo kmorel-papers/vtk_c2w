@@ -14,7 +14,7 @@
 \newcommand{\cidentifier}[1]{\texttt{#1}}
 
 \title{From Cluster to Wall with VTK}
-\author{Kenneth~Moreland David~Thompson}
+\author{Kenneth~Moreland and David~Thompson}
 
 \begin{document}
 
@@ -148,7 +148,7 @@
       \includegraphics[width=\linewidth]
 		      {images/ParallelRenderManagerInteraction}
     \end{center}
-    \caption{Interactions of parallel render manager during render.}
+    \caption{Interactions of the parallel render manager during render.}
     \label{fig:parallel_render_manager_interaction}
   \end{figure}
   Figure \vref{fig:parallel_render_manager_interaction} outlines how the
@@ -175,6 +175,10 @@
   \cidentifier{vtk\-Parallel\-Render\-Manager} also has the following
   features.
   \begin{description}
+    \item [Object Creation] Provides factory methods for creating renderer
+      and render window objects.  This allows a parllel rendering scheme to
+      perform operations in the middle of rendering by subclassing some of
+      the objects that perform the actual render.
     \item [Boundries] Will compute the physical boundry, in three space, of
       the composite object rendered by all processes.
     \item [Image Reduction] Can reduce the size of the image being rendered
@@ -203,7 +207,8 @@
   for \cidentifier{vtk\-Composite\-Render\-Manager} is quite small since
   \cidentifier{vtk\-Parallel\-Render\-Manager} does most of the work.  It
   took very little time to code and debug
-  \cidentifier{vtk\-Composite\-Render\-Manager}.
+  \cidentifier{vtk\-Composite\-Render\-Manager}.  Our hope is to one day
+  replace the composite manager in VTK with our own version.
 
 
   \section{Desktop Delivery}
@@ -214,26 +219,20 @@
   remote desktop delivery.  That is, we wish a user to be able to
   interactively control a visualization job rendering on a cluster and
   display back to a typical desktop machine connected via a modest LAN
-  connection.
+  network.
 
-  \begin{figure*}
-    \begin{center}
-      \includegraphics[width=\textwidth]{images/DesktopDeliveryClasses}
-    \end{center}
-    \caption{Desktop delivery objects.}
-    \label{fig:desktop_delivery_classes}
-  \end{figure*}
-
-  Figure \vref{fig:desktop_delivery_classes} shows the collaboration
-  between the desktop delivery objects and other VTK components.  There are
-  two desktop delivery objects, one for the client, which accepts user
-  input and displays rendered images, and one for the server, which
-  performs the visualization processing and rendering.  The two objects are
-  connected together with a pair of vtkMultiProcessController objects.
-  vtkMultiProcessController is an abstract interface to parallel process
-  control and communication.  The desktop delivery objects expect the
-  process controller to control exactly two objects with client and server
-  in opposite processes.  The controller is typically implemented with a
+  To this end, we have built a pair of collaborating objects:
+  \cidentifier{vtk\-Desktop\-Delivery\-Client} and
+  \cidentifier{vtk\-Desktop\-Delivery\-Server}.  The client object is
+  responsible for accepting user input and displaying rendered images.  The
+  server object is responsible for the visualization processing and
+  rendering.  The two objects are connected together with a pair of
+  \cidentifier{vtk\-Multi\-Process\-Controller} objects.
+  \cidentifier{vtk\-Multi\-Process\-Controller}, which is part of the VTK
+  distribution, is an abstract interface to parallel process control and
+  communication.  The desktop delivery objects expect the process
+  controller to control exactly two objects with client and server in
+  opposite processes.  The controller is typically implemented with a
   socket, but does not have to be.
 
   \begin{figure}[ht]
@@ -244,42 +243,104 @@
     \end{center}
   \end{figure}
 
-  The desktop delivery client object attaches itself as an observer to a
-  render window.  When a render event occurs, the desktop delivery client
-  object sends a render request to the server, waits for an image to come
-  back, and pastes the image to the window.  Figure
-  \vref{fig:desktop_delivery_interaction} shows the details of this
-  process.
+  The \cidentifier{vtk\-Desktop\-Delivery\-Client} object attaches itself
+  as an observer to a render window.  When a render event occurs, the
+  desktop delivery client object sends a render request to the server along
+  with the rendering parameters, waits for an image to come back, and
+  pastes the image to the window.  As one would expect, the
+  \cidentifier{vtk\-Desktop\-Delivery\-Server} object responds to render
+  requests from the client by invoking the render window and shipping the
+  resulting image back.  Figure \vref{fig:desktop_delivery_interaction}
+  shows the details of this process.
+
+  The reader may notice a striking similarity between the operational
+  features of the desktop delivery client/server and the parallel render
+  manager described in section \ref{sec:parallel_rendering_interface}.  In
+  particular, the interactions shown in figures
+  \ref{fig:parallel_render_manager_interaction} and
+  \ref{fig:desktop_delivery_interaction} are nearly identical.  Because of
+  this, both \cidentifier{vtk\-Desktop\-Delivery\-Client} and
+  \cidentifier{vtk\-Desktop\-Delivery\-Server} inherit from
+  \cidentifier{vtk\-Parallel\-Render\-Manager}.  While this inheritance
+  strains the ``is-a'' requirement dictated by good object oriented program
+  design, we felt the amount of code re-use we achieved was too important
+  to neglect.  Futhermore, by inheriting from
+  \cidentifier{vtk\-Parallel\-Render\-Manager} we were able to take
+  advantage of its boundry calculation and image reduction capabilities,
+  both of which are vital properties of our desktop delivery.
 
   Because the desktop delivery server was designed to enable delivery from
-  clusters, it can optionally work with a vtkCompositeManager object, which
-  is the object VTK uses to perform sort-last parallel rendering.  The
-  desktop delivery server object uses the composite manager to compute the
-  complete object bounds, get timing statistics, and otherwise control the
-  parallel rendering process.
+  clusters, it can optionally work with another
+  \cidentifier{vtk\-Parallel\-Render\-Manager} object.  The
+  \cidentifier{vtk\-Desktop\-Delivery\-Server} performs image delivery
+  after the other \cidentifier{vtk\-Parallel\-Render\-Manager} generates
+  the image.  The desktop delivery server object uses the other parallel
+  render manager to compute the complete object bounds, get timing
+  statistics, and otherwise control the parallel rendering process.  The
+  desktop delivery server will also take advantage of the other parallel
+  render manager's image caching to avoid multiple reads and writes from
+  the graphics card frame buffer.
 
-  We also want the remote rendering's interactivity to be resilient to
-  network speeds and rendering image size.  This is done with a reduction
-  factor option, a concept borrowed from the vtkCompositeManager class.
-  This option reduces the width and height of the rendered image by the
-  factor given and then expands the image with pixel replication on the
-  client side.  The reduced image size can save time in server client
-  transfer times as well as composite times in parallel applications.  In
-  addition, vtkDesktopDeliveryClient has the capability to adjust the
-  reduction factor based on timings of the previous run and the desired
-  rendering rate set in the render window.
+
+  \section{Chromium}
+  \label{sec:chromium}
+
+  We also greatly desire to drive power walls in our parallel VTK
+  applications.  One means of doing this is with the Chromium system
+  \cite{Humphreys02}.  Chromium intercepts a stream of OpenGL commands and
+  filters them.  Chromium's filters are pluggable components called stream
+  processing units (SPUs).  One such unit distributed with Chromium is the
+  \cidentifier{tile\-sort} SPU.  The \cidentifier{tile\-sort} SPU
+  determines the area of the screen groups of primitives occupy and ships
+  them to cluster nodes responsible for displaying that portion of the
+  screen.
+
+  Because Chromium has the ability to put itself in place of an OpenGL
+  shared object library, it can provide a tile display and/or a number of
+  other filtering operations to almost any OpenGL application without
+  modification.  However, the OpenGL API is inherently serial, which can
+  impose a huge bottleneck.  Chromium also supports parallel applications,
+  but the application must be at least somewhat Chromium ``aware.''
+
+  To make our VTK applications Chromium aware, we built the
+  \cidentifier{vtk\-Cr\-Render\-Manager} object.  Because the parallel
+  rendering is really being handled by Chromium,
+  \cidentifier{vtk\-Cr\-Render\-Manager} does little but allow its
+  superclass, \cidentifier{vtk\-Parallel\-Render\-Manager}, to propagate
+  render events and parameters.  We also built
+  \cidentifier{vtk\-Cr\-Open\-GL\-Render\-Window} and
+  \cidentifier{vtk\-Cr\-Open\-GL\-Renderer} objects, which the Chromium
+  render manager will build for the application.  They work very much like
+  their OpenGL counterparts except that they can interface directly with
+  the Chromium API.  Currently, they suppress the creation of unused
+  windows, provide bounding box hints for \cidentifier{tile\-sort}, and
+  provide some interaction with a few other select SPUs.  In time, the
+  features of these objects may grow to strengthen the coupling between VTK
+  applications and Chromium.
+
+  Chromium scaling issues.
+
+
+  \section{ICE-T}
+  \label{sec:ICE-T}
+
+  Another power wall display solution available to us is ICE-T, the Image
+  Composite Engine for Tiles.  The ICE-T API is an implementation of the
+  work presented by Moreland, Wylie, and Pavlakos for efficiently
+  performing sort-last parallel rendering onto tile displays
+  \cite{Moreland01}.
 
 
   \section{Tiled Display}
   \label{sec:tiled_display}
 
-  \begin{figure*}
-    \begin{center}
-      \includegraphics[scale=0.23]{images/IceTCompositeClasses}
-    \end{center}
-    \caption{Tiled display compositing classes.}
-    \label{fig:tiled_display_classes}
-  \end{figure*}
+%%   \begin{figure*}
+%%     \begin{center}
+%%       \includegraphics[scale=0.23]{images/IceTCompositeClasses}
+%%     \end{center}
+%%     \caption{Tiled display compositing classes.}
+%%     \label{fig:tiled_display_classes}
+%%   \end{figure*}
 
   We also greatly desire to drive power walls in our parallel VTK
   applications.  We did this by wrapping our ICE-T API in VTK objects.
@@ -297,7 +358,7 @@
   render multiple viewing frustums, and compose multiple images in
   parallel.  The ICE-T composite manager does nothing but emit errors if
   not used with an ICE-T renderer.  A diagram of how these objects
-  collaborate is shown in figure \vref{fig:tiled_display_classes}.
+%%   collaborate is shown in figure \vref{fig:tiled_display_classes}.
 
   Like the desktop delivery and other forms of the vtkCompositeManager
   classes, the ICE-T composite manager also supports the idea of a
