@@ -139,7 +139,7 @@
       \includegraphics[width=4in]
 		      {images/ParallelRenderManagerInteraction}
     \end{center}
-    \caption{Interactions of the parallel render manager during render.}
+    \caption{Interactions of the parallel render manager during a render.}
     \label{fig:parallel_render_manager_interaction}
   \end{figure*}
 
@@ -534,7 +534,7 @@
     \caption{Scaling of parallel rendering using Chromium's
       \cidentifier{tile\-sort} SPU.  Each client renders about 7.4 million
       triangles (i.e. larger jobs have more triangles).  Measurements were
-      taken using a 100BASE-T network.}
+      taken using TCP/IP connections over a 100BASE-T network.}
     \label{fig:chromium}
   \end{figure}
 
@@ -593,7 +593,7 @@
   strengths and weaknesses, and it may be imperative to pick the method
   that best fits the current usage for the system.  For example, when using
   our sort last methods on our cluster (comprised of 128 Dell Precision 530
-  workstations, each with dual 2.0 GHz Pentium-4 Xeon CPUs, 1 GB RDRAM, a
+  workstations, each with dual 2.0~GHz Pentium-4 Xeon CPUs, 1~GB RDRAM, a
   GeForce 3 graphics card, and interconnected with Myrinet 2000), we find
   that even with very little geometry we can achieve frame rates of only
   about 10~Hz for our tile displays due to the overhead of image
