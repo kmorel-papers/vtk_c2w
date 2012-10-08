@@ -1,6 +1,6 @@
 # -*- Makefile -*-
 
-TARGET = vtkicet
+TARGET = vtk_c2w
 
 LATEX_FLAGS	= -interaction=nonstopmode
 BIBTEX_FLAGS	=
